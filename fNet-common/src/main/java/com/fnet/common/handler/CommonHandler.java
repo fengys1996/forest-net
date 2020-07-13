@@ -27,7 +27,7 @@ public class CommonHandler extends ChannelInboundHandlerAdapter {
         cause.printStackTrace();
     }
 
-    private static final Message HEART_BEAT_MSG = new Message(MessageType.HEART_BEAT, null);
+    private static final Message HEART_BEAT_MSG = new Message(MessageType.HEART_BEAT, 0,null);
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {

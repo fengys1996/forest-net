@@ -1,4 +1,4 @@
-package com.fnet.server.Data;
+package com.fnet.out.server.data;
 
 import com.fnet.common.transferProtocol.Message;
 import io.netty.buffer.Unpooled;

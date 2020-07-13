@@ -22,7 +22,7 @@ public class MessageDecoder extends ReplayingDecoder<Void> {
             out.add(new Message(MessageType.valueOf(messageType), outerChannelId, null));
         } else {
             byte[] data = new byte[length];
-            in.writeBytes(data);
+            in.readBytes(data);
             out.add(new Message(MessageType.valueOf(messageType), outerChannelId, data));
         }
     }

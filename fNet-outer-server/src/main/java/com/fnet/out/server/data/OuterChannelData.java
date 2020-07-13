@@ -1,9 +1,10 @@
-package com.fnet.server.Data;
+package com.fnet.out.server.data;
 
 import io.netty.channel.Channel;
 import lombok.NonNull;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class OuterChannelData {
@@ -30,5 +31,15 @@ public class OuterChannelData {
 
     public void removeOuterChannel(@NonNull Channel channel) {
         objOuterChannelMap.remove(channel);
+    }
+
+    public void clear() {
+        Iterator<Map.Entry<Integer, Channel>> iterator = objOuterChannelMap.entrySet().iterator();
+        if (iterator.hasNext()) {
+            Map.Entry<Integer, Channel> next = iterator.next();
+            Channel channel = next.getValue();
+            channel.close();
+            iterator.remove();
+        }
     }
 }

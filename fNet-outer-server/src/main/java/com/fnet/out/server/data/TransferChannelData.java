@@ -1,4 +1,4 @@
-package com.fnet.server.Data;
+package com.fnet.out.server.data;
 
 import com.fnet.common.channel.ChannelInfo;
 import com.fnet.common.channel.ChannelStatusEnum;
@@ -6,6 +6,7 @@ import io.netty.channel.Channel;
 import lombok.NonNull;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class TransferChannelData {
@@ -32,8 +33,11 @@ public class TransferChannelData {
         transferChannelList.remove(channel);
     }
 
-    public synchronized Channel getReadyTransferChannel() {
-        if (transferChannelList.size() > 0) {
+    // qu
+//    public synchronized Channel getReadyTransferChannel() {
+    public Channel getReadyTransferChannel() {
+        return transferChannelList.get(0).getChannel();
+        /*if (transferChannelList.size() > 0) {
             int pollingNum = 0;
             while (true) {
                 int temp = index;
@@ -50,14 +54,25 @@ public class TransferChannelData {
             return null;
         } else {
             throw new RuntimeException("have no ready transfer channel!");
-        }
+        }*/
     }
 
-    public synchronized void freeChannel(@NonNull Channel channel) {
+//    public synchronized void freeChannel(@NonNull Channel channel) {
+    public void freeChannel(@NonNull Channel channel) {
         for (ChannelInfo channelInfo : transferChannelList) {
             if (channelInfo.getChannel() == channel) {
                 channelInfo.setChannelStatus(ChannelStatusEnum.free);
             }
+        }
+    }
+
+    public void clearAllChannel() {
+        Iterator<ChannelInfo> iterator = transferChannelList.iterator();
+        if (iterator.hasNext()) {
+            ChannelInfo channelInfo = iterator.next();
+            Channel channel = channelInfo.getChannel();
+            channel.close();
+            iterator.remove();
         }
     }
 

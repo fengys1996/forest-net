@@ -1,16 +1,16 @@
-package com.fnet.server;
+package com.fnet.out.server;
 
 import com.fnet.common.codec.MessageDecoder;
 import com.fnet.common.codec.MessageEncoder;
 import com.fnet.common.net.TcpServer;
-import com.fnet.server.handler.MonitorInnerServerHandler;
+import com.fnet.out.server.handler.MonitorInnerServerHandler;
 import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
 
 /**
  * start outer server here
  */
-public class ServerApp {
+public class OuterServerApp {
 
     public static void main(String[] args) throws InterruptedException {
          new TcpServer().startMonitor(9090, new ChannelInitializer<SocketChannel>() {

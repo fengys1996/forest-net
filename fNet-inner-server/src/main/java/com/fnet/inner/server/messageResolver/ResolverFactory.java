@@ -1,4 +1,4 @@
-package com.fnet.server.messageResolver;
+package com.fnet.inner.server.messageResolver;
 
 import com.fnet.common.transferProtocol.Message;
 import com.fnet.common.transferProtocol.MessageResolver;
@@ -13,7 +13,6 @@ public class ResolverFactory {
     {
         resolvers.add(new DisconnectResolver());
         resolvers.add(new HeartBeatResolver());
-        resolvers.add(new RegisterResolver());
         resolvers.add(new TransferResolver());
     }
 

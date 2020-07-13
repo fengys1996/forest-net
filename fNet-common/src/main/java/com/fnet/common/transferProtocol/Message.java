@@ -7,7 +7,7 @@ public class Message {
 
     private MessageType type;
     private int outerChannelId;
-    byte[] data;
+    private byte[] data;
 
     public Message() {
     }

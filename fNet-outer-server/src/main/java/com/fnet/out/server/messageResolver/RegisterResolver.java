@@ -1,10 +1,10 @@
-package com.fnet.server.messageResolver;
+package com.fnet.out.server.messageResolver;
 
 import com.fnet.common.net.TcpServer;
 import com.fnet.common.transferProtocol.Message;
 import com.fnet.common.transferProtocol.MessageResolver;
 import com.fnet.common.transferProtocol.MessageType;
-import com.fnet.server.handler.MonitorBrowserHandler;
+import com.fnet.out.server.handler.MonitorBrowserHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -15,13 +15,16 @@ public class RegisterResolver implements MessageResolver {
 
     @Override
     public void resolve(Message message) throws InterruptedException {
-        new TcpServer().startMonitor(8081, new ChannelInitializer<SocketChannel>() {
+        // first authentication
+        System.out.println("register!");
+        // second monitor browser
+        /*new TcpServer().startMonitor(8081, new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
-                pipeline.addLast(new ByteArrayDecoder(), new ByteArrayEncoder(), new MonitorBrowserHandler());
+                pipeline.addLast(new MonitorBrowserHandler());
             }
-        });
+        });*/
     }
 
     @Override

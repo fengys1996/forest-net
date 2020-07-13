@@ -1,4 +1,4 @@
-package com.fnet.server.messageResolver;
+package com.fnet.out.server.messageResolver;
 
 import com.fnet.common.transferProtocol.Message;
 import com.fnet.common.transferProtocol.MessageResolver;
