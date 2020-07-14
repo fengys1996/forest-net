@@ -26,8 +26,32 @@ public class Sender {
         }
     }
 
-    public static void sendMessageToOuterServer(Message message) {
+    public static void sendBytesToRealServer(Channel channel, Message message) {
+        if (channel == null) {
+            System.out.println("Have not inner channel to send bytes to real server!");
+        } else if(channel.isOpen()) {
+            channel.writeAndFlush(message.getData()).addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    if (future.isSuccess()) {
 
+                    } else {
+
+                    }
+                }
+            });
+        }
+    }
+
+    public static void sendMessageToOuterServer(Message message) {
+        Channel readyTransferChannel = TransferChannelData.getInstance().getReadyTransferChannel();
+        readyTransferChannel.writeAndFlush(message).addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                if (future.isSuccess()) {
+                }
+            }
+        });
     }
 
     public static void sendRegisterMessage(Channel channel) {

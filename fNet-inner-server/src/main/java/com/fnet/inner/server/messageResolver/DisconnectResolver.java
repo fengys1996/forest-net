@@ -10,7 +10,7 @@ public class DisconnectResolver implements MessageResolver {
     @Override
     public void resolve(Message message) {
         // close all channel of transfer
-        ContactOfOuterToInnerChannel.getInstance().clear();
+//        ContactOfOuterToInnerChannel.getInstance().clear();
     }
 
     @Override

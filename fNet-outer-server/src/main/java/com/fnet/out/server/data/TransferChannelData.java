@@ -30,7 +30,12 @@ public class TransferChannelData {
     }
 
     public void removeTransferChannel(Channel channel) {
-        transferChannelList.remove(channel);
+        for (ChannelInfo channelInfo : transferChannelList) {
+            if (channelInfo.getChannel() == channel) {
+                transferChannelList.remove(channelInfo);
+                return;
+            }
+        }
     }
 
     public synchronized Channel getReadyTransferChannel() {
@@ -55,7 +60,6 @@ public class TransferChannelData {
         }*/
     }
 
-//    public synchronized void freeChannel(@NonNull Channel channel) {
     public void freeChannel(@NonNull Channel channel) {
         for (ChannelInfo channelInfo : transferChannelList) {
             if (channelInfo.getChannel() == channel) {

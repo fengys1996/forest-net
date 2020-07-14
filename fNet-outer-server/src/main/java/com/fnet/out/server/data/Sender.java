@@ -1,9 +1,7 @@
 package com.fnet.out.server.data;
 
 import com.fnet.common.transferProtocol.Message;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 
 import java.util.concurrent.TimeUnit;
@@ -27,7 +25,7 @@ public class Sender {
         System.out.println("hash code=" + finalChannel.hashCode());
         readyChannel.writeAndFlush(message).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
-                TransferChannelData.getInstance().freeChannel(finalChannel);
+//                TransferChannelData.getInstance().freeChannel(finalChannel);
                 System.out.println("send message success!(outer server to transfer readyChannel)");
             } else {
                 System.out.println("send message failed!(outer server to transfer readyChannel)");

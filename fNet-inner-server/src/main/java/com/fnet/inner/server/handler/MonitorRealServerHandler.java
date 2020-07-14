@@ -17,16 +17,19 @@ public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("add!!!inner channel hashcode=" + ctx.channel().hashCode() + "...outchannel id:" + message.getOuterChannelId());
         ContactOfOuterToInnerChannel.getInstance().addToMap(message.getOuterChannelId(), ctx.channel());
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        System.out.println("accept message from real server!");
         Sender.sendMessageToOuterServer(new Message(MessageType.TRANSFER_DATA, message.getOuterChannelId(), (byte[])msg));
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("real channel in active!");
         ContactOfOuterToInnerChannel.getInstance().removeFromMap(message.getOuterChannelId());
     }
 }

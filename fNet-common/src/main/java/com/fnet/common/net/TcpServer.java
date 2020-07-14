@@ -35,12 +35,12 @@ public class TcpServer {
         }
     }
 
-    public void doSomeThingAfterConnectSuccess() {
+    public void doSomeThingAfterConnectSuccess(Channel channel) {
         // can be override
     }
 
     public void startConnect(String host, int port, ChannelInitializer<SocketChannel> channelInitializer) throws InterruptedException {
-        EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+        EventLoopGroup eventLoopGroup = new NioEventLoopGroup(8);
         try {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(eventLoopGroup)
@@ -51,13 +51,13 @@ public class TcpServer {
                 public void operationComplete(ChannelFuture future) throws Exception {
                     if (future.isSuccess()) {
                         System.out.println("success");
-                        doSomeThingAfterConnectSuccess();
+                        doSomeThingAfterConnectSuccess(future.channel());
                         //future.channel().closeFuture().sync();
                     } else {
                         System.out.println("failed");
                     }
                 }
-            });
+            }).sync();
         } finally {
 //            eventLoopGroup.shutdownGracefully();
         }

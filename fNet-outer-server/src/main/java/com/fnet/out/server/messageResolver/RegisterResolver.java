@@ -13,16 +13,22 @@ import io.netty.handler.codec.bytes.ByteArrayEncoder;
 public class RegisterResolver implements MessageResolver {
 
     @Override
-    public void resolve(Message message) throws InterruptedException {
+    public void resolve(Message message) {
         // first authentication
         System.out.println("[resolver] register!");
         // second monitor browser
-        new TcpServer().startMonitor(8081, new ChannelInitializer<SocketChannel>() {
-            @Override
-            protected void initChannel(SocketChannel ch) throws Exception {
-                ch.pipeline().addLast(new ByteArrayEncoder(), new ByteArrayDecoder(), new MonitorBrowserHandler());
+        new Thread(() -> {
+            try {
+                new TcpServer().startMonitor(8081, new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel ch) throws Exception {
+                        ch.pipeline().addLast(new ByteArrayEncoder(), new ByteArrayDecoder(), new MonitorBrowserHandler());
+                    }
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        });
+        }).start();
     }
 
     @Override

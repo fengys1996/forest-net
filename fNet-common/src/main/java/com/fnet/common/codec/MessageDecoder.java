@@ -17,8 +17,8 @@ public class MessageDecoder extends ReplayingDecoder<Void> {
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         System.out.println("decode");
         int messageType = in.readInt();
-        int length = in.readInt();
         int outerChannelId = in.readInt();
+        int length = in.readInt();
         if (length == 0) {
             out.add(new Message(MessageType.valueOf(messageType), outerChannelId, null));
         } else {

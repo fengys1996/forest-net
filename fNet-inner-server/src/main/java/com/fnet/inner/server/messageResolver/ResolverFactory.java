@@ -10,7 +10,7 @@ public class ResolverFactory {
 
     private static ResolverFactory resolverFactory = new ResolverFactory();
     private static final List<MessageResolver> resolvers = new ArrayList<>();
-    {
+    static {
         resolvers.add(new DisconnectResolver());
         resolvers.add(new HeartBeatResolver());
         resolvers.add(new TransferResolver());
