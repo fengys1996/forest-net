@@ -15,6 +15,7 @@ public class MessageDecoder extends ReplayingDecoder<Void> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+        System.out.println("decode");
         int messageType = in.readInt();
         int length = in.readInt();
         int outerChannelId = in.readInt();
@@ -25,5 +26,6 @@ public class MessageDecoder extends ReplayingDecoder<Void> {
             in.readBytes(data);
             out.add(new Message(MessageType.valueOf(messageType), outerChannelId, data));
         }
+        System.out.println("decode over");
     }
 }

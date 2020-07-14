@@ -12,6 +12,7 @@ public class MessageEncoder extends MessageToByteEncoder<Message> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Message msg, ByteBuf out) throws Exception {
+        System.out.println("encode!");
         out.writeInt(msg.getType().getCode());
         out.writeInt(msg.getOuterChannelId());
         if (msg.getData() == null) {
@@ -20,6 +21,6 @@ public class MessageEncoder extends MessageToByteEncoder<Message> {
             out.writeInt(msg.getData().length);
             out.writeBytes(msg.getData());
         }
-
+        System.out.println("encode over!");
     }
 }

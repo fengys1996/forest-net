@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Sender {
 
-    // 应该有一个重试次数限制，超出则放弃
     public static void sendMessageToTransferChannel(Message message) {
+        System.out.println("sendMessageToTransferChannel");
         Channel readyChannel;
         readyChannel = TransferChannelData.getInstance().getReadyTransferChannel();
         while (readyChannel == null) {
@@ -24,17 +24,16 @@ public class Sender {
         }
 
         Channel finalChannel = readyChannel;
-        readyChannel.writeAndFlush(message).addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-                if (future.isSuccess()) {
-                    TransferChannelData.getInstance().freeChannel(finalChannel);
-//                    log.info("send message success!(outer server to transfer readyChannel)");
-                } else {
-//                    log.info("send message failed!(outer server to transfer readyChannel)");
-                }
+        System.out.println("hash code=" + finalChannel.hashCode());
+        readyChannel.writeAndFlush(message).addListener((ChannelFutureListener) future -> {
+            if (future.isSuccess()) {
+                TransferChannelData.getInstance().freeChannel(finalChannel);
+                System.out.println("send message success!(outer server to transfer readyChannel)");
+            } else {
+                System.out.println("send message failed!(outer server to transfer readyChannel)");
             }
         });
+        System.out.println("sendMessageToTransferChannel over");
     }
 
     public static void sendBytesToBrowser(Message message) {
@@ -42,15 +41,15 @@ public class Sender {
         outerChannel = OuterChannelData.getInstance().getOuterChannelById(message.getOuterChannelId());
 
         if (outerChannel != null && outerChannel.isOpen()) {
-            outerChannel.writeAndFlush(Unpooled.copiedBuffer(message.getData())).addListener((ChannelFutureListener) future -> {
+            outerChannel.writeAndFlush(message.getData()).addListener((ChannelFutureListener) future -> {
                 if (future.isSuccess()) {
-//                        System.out.println("send to browser success!!!");
+                    System.out.println("send to browser success!!!");
                 } else {
-//                        System.out.println("send to browser failed!!!");
+                    System.out.println("send to browser failed!!!");
                 }
             });
         } else {
-//            System.out.println("have no channel to Browser!!!");
+            System.out.println("have no channel to Browser!!!");
         }
     }
 }

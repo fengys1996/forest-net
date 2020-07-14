@@ -13,7 +13,7 @@ import io.netty.channel.socket.SocketChannel;
 public class OuterServerApp {
 
     public static void main(String[] args) throws InterruptedException {
-         new TcpServer().startMonitor(9090, new ChannelInitializer<SocketChannel>() {
+         new TcpServer().startMonitor(9091, new ChannelInitializer<SocketChannel>() {
              @Override
              protected void initChannel(SocketChannel ch) throws Exception {
                  ChannelPipeline pipeline = ch.pipeline();

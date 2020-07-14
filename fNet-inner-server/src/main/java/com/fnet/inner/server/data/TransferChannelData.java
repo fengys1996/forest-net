@@ -1,4 +1,4 @@
-package com.fnet.out.server.data;
+package com.fnet.inner.server.data;
 
 import com.fnet.common.channel.ChannelInfo;
 import com.fnet.common.channel.ChannelStatusEnum;
