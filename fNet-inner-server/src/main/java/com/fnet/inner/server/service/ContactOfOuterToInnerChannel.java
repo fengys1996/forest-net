@@ -1,4 +1,4 @@
-package com.fnet.inner.server.data;
+package com.fnet.inner.server.service;
 
 import io.netty.channel.Channel;
 

@@ -2,8 +2,8 @@ package com.fnet.out.server.handler;
 
 import com.fnet.common.transferProtocol.Message;
 import com.fnet.common.transferProtocol.MessageType;
-import com.fnet.out.server.data.OuterChannelData;
-import com.fnet.out.server.data.Sender;
+import com.fnet.out.server.service.OuterChannelDataService;
+import com.fnet.out.server.service.OuterSender;
 import io.netty.channel.*;
 
 public class MonitorBrowserHandler extends ChannelInboundHandlerAdapter {
@@ -11,7 +11,7 @@ public class MonitorBrowserHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("browser is a socket connect!" + "The hashcode is " + ctx.channel().hashCode());
-        OuterChannelData.getInstance().addToOuterChannelMap(ctx.channel());
+        OuterChannelDataService.getInstance().addToOuterChannelMap(ctx.channel());
     }
 
     @Override
@@ -23,12 +23,12 @@ public class MonitorBrowserHandler extends ChannelInboundHandlerAdapter {
         outerChannelId = ctx.channel().hashCode();
 
         Message message = new Message(MessageType.TRANSFER_DATA, outerChannelId, bytes);
-        Sender.sendMessageToTransferChannel(message);
+        OuterSender.getInstance().sendMessageToTransferChannel(message);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("browser is socket disconnect!" + "The hashcode is = " + ctx.channel().hashCode());
-        OuterChannelData.getInstance().removeOuterChannel(ctx.channel());
+        OuterChannelDataService.getInstance().removeOuterChannel(ctx.channel());
     }
 }

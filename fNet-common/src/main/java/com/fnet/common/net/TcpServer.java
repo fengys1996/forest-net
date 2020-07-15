@@ -47,7 +47,8 @@ public class TcpServer {
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.TCP_NODELAY, true)
                     .handler(channelInitializer);
-            ChannelFuture channelFuture = bootstrap.connect(host, port).addListener(new ChannelFutureListener() {
+            bootstrap.connect(host, port).addListener(new ChannelFutureListener() {
+                @Override
                 public void operationComplete(ChannelFuture future) throws Exception {
                     if (future.isSuccess()) {
                         System.out.println("success");

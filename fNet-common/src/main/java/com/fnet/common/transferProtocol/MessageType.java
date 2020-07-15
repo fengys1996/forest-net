@@ -34,9 +34,15 @@ public enum MessageType {
 
     /**
      * heart beat
-     * direction: outer server -> inner server
+     * direction: outer server <-> inner server
      */
-    HEART_BEAT(6);
+    HEART_BEAT(6),
+
+    /**
+     * hear beat response
+     * direction: outer server <-> inner server
+     */
+    HEART_BEAT_RESPONSE(7);
 
     private int code;
 

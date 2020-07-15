@@ -2,8 +2,8 @@ package com.fnet.inner.server.handler;
 
 import com.fnet.common.transferProtocol.Message;
 import com.fnet.common.transferProtocol.MessageType;
-import com.fnet.inner.server.data.ContactOfOuterToInnerChannel;
-import com.fnet.inner.server.data.Sender;
+import com.fnet.inner.server.service.ContactOfOuterToInnerChannel;
+import com.fnet.inner.server.service.InnerSender;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -24,7 +24,7 @@ public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("accept message from real server!");
-        Sender.sendMessageToOuterServer(new Message(MessageType.TRANSFER_DATA, message.getOuterChannelId(), (byte[])msg));
+        InnerSender.getInstance().sendMessageToTransferChannel(new Message(MessageType.TRANSFER_DATA, message.getOuterChannelId(), (byte[])msg));
     }
 
     @Override

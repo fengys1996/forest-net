@@ -1,4 +1,4 @@
-package com.fnet.out.server.data;
+package com.fnet.common.service;
 
 import com.fnet.common.channel.ChannelInfo;
 import com.fnet.common.channel.ChannelStatusEnum;
@@ -9,15 +9,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class TransferChannelData {
+public class TransferChannelService {
 
-    private static TransferChannelData transferChannelData = new TransferChannelData();
+    private static TransferChannelService transferChannelData = new TransferChannelService();
 
-    private TransferChannelData() {
+    private TransferChannelService() {
 
     }
 
-    public static TransferChannelData getInstance() {
+    public static TransferChannelService getInstance() {
         return transferChannelData;
     }
 
@@ -39,25 +39,13 @@ public class TransferChannelData {
     }
 
     public synchronized Channel getReadyTransferChannel() {
-        return transferChannelList.get(0).getChannel();
-        /*if (transferChannelList.size() > 0) {
-            int pollingNum = 0;
-            while (true) {
-                int temp = index;
-                index = (index + 1 >= transferChannelList.size()) ? 0 : index + 1;
-                ChannelInfo channelInfo = transferChannelList.get(temp);
-                if (channelInfo.getChannelStatus() == ChannelStatusEnum.free) {
-                    return channelInfo.getChannel();
-                }
-                pollingNum++;
-                if (pollingNum >= 10000) {
-                    break;
-                }
-            }
-            return null;
+        if (transferChannelList.size() > 0) {
+            int temp = index;
+            index = (index + 1 >= transferChannelList.size()) ? 0 : index + 1;
+            return transferChannelList.get(temp).getChannel();
         } else {
             throw new RuntimeException("have no ready transfer channel!");
-        }*/
+        }
     }
 
     public void freeChannel(@NonNull Channel channel) {

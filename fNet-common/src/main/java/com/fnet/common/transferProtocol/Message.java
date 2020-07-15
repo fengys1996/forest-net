@@ -12,6 +12,12 @@ public class Message {
     public Message() {
     }
 
+    public Message(MessageType type) {
+        this.type = type;
+        this.outerChannelId = 0;
+        this.data = null;
+    }
+
     public Message(MessageType type, int outerChannelId , byte[] data) {
         this.type = type;
         this.outerChannelId = outerChannelId;

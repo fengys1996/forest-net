@@ -1,4 +1,4 @@
-package com.fnet.out.server.data;
+package com.fnet.out.server.service;
 
 import io.netty.channel.Channel;
 import lombok.NonNull;
@@ -7,15 +7,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class OuterChannelData {
+public class OuterChannelDataService {
 
-    private static OuterChannelData outerChannelData = new OuterChannelData();
+    private static OuterChannelDataService outerChannelData = new OuterChannelDataService();
 
-    private OuterChannelData() {
+    private OuterChannelDataService() {
 
     }
 
-    public static OuterChannelData getInstance() {
+    public static OuterChannelDataService getInstance() {
         return outerChannelData;
     }
 

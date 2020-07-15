@@ -1,5 +1,6 @@
 package com.fnet.common.handler;
 
+import com.fnet.common.service.AbstractSender;
 import com.fnet.common.transferProtocol.MessageType;
 import com.fnet.common.transferProtocol.Message;
 import io.netty.channel.ChannelHandlerContext;
@@ -27,12 +28,10 @@ public class CommonHandler extends ChannelInboundHandlerAdapter {
         cause.printStackTrace();
     }
 
-    private static final Message HEART_BEAT_MSG = new Message(MessageType.HEART_BEAT, 0,null);
-
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
-            ctx.writeAndFlush(HEART_BEAT_MSG);
+            ctx.writeAndFlush(AbstractSender.HEART_BEAT_MESSAGE);
         }
     }
 }

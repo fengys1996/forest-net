@@ -1,18 +1,18 @@
 package com.fnet.inner.server.handler;
 
+import com.fnet.common.handler.CommonHandler;
+import com.fnet.common.service.TransferChannelService;
 import com.fnet.common.transferProtocol.Message;
-import com.fnet.inner.server.data.Sender;
-import com.fnet.inner.server.data.TransferChannelData;
+import com.fnet.inner.server.service.InnerSender;
 import com.fnet.inner.server.messageResolver.ResolverContext;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class MonitorOuterServerHandler extends ChannelInboundHandlerAdapter {
+public class MonitorOuterServerHandler extends CommonHandler {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        TransferChannelData.getInstance().addTransferChannel(ctx.channel());
-        Sender.sendRegisterMessage(ctx.channel());
+        TransferChannelService.getInstance().addTransferChannel(ctx.channel());
+        InnerSender.getInstance().sendRegisterMessage(ctx.channel());
     }
 
     @Override
@@ -23,6 +23,6 @@ public class MonitorOuterServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        TransferChannelData.getInstance().removeTransferChannel(ctx.channel());
+        TransferChannelService.getInstance().removeTransferChannel(ctx.channel());
     }
 }

@@ -4,16 +4,14 @@ import com.fnet.common.transferProtocol.Message;
 import com.fnet.common.transferProtocol.MessageResolver;
 import com.fnet.common.transferProtocol.MessageType;
 
-public class DisconnectResolver implements MessageResolver {
-
+public class HeartBeatResponseResolver implements MessageResolver {
     @Override
-    public void resolve(Message message) {
-        // close all channel of transfer
-//        ContactOfOuterToInnerChannel.getInstance().clear();
+    public void resolve(Message message) throws InterruptedException {
+        
     }
 
     @Override
     public boolean isSupport(Message message) {
-        return message.getType() == MessageType.DISCONNECT;
+        return message.getType() == MessageType.HEART_BEAT_RESPONSE;
     }
 }
