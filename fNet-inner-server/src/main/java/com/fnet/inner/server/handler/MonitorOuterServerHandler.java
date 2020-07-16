@@ -17,7 +17,6 @@ public class MonitorOuterServerHandler extends CommonHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("Thread name = " + Thread.currentThread().getName());
         ResolverContext.resolverMessage((Message) msg);
     }
 

@@ -16,6 +16,7 @@ public class MonitorInnerServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        System.out.println("accept!");
         ResolverContext.resolverMessage((Message) msg);
     }
 
