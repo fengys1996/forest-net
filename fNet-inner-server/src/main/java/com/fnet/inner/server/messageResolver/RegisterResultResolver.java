@@ -3,6 +3,7 @@ package com.fnet.inner.server.messageResolver;
 import com.fnet.common.transferProtocol.Message;
 import com.fnet.common.transferProtocol.MessageResolver;
 import com.fnet.common.transferProtocol.MessageType;
+import com.fnet.inner.server.tool.CloseHelper;
 
 public class RegisterResultResolver implements MessageResolver {
     @Override
@@ -11,8 +12,9 @@ public class RegisterResultResolver implements MessageResolver {
         if (data != null) {
             String s = new String(data);
             if ("true".equals(s)) {
-                // doNothing
                 return;
+            } else {
+                CloseHelper.closeInnerServer();
             }
         }
 

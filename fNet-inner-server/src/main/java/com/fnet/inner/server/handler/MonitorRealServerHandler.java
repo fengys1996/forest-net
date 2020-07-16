@@ -17,7 +17,7 @@ public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("add!!!inner channel hashcode=" + ctx.channel().hashCode() + "...outchannel id:" + message.getOuterChannelId());
+        System.out.println("add!!!inner channel hashcode=" + ctx.channel().hashCode() + "...outerChannel id:" + message.getOuterChannelId());
         ContactOfOuterToInnerChannel.getInstance().addToMap(message.getOuterChannelId(), ctx.channel());
     }
 

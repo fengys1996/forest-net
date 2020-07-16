@@ -38,6 +38,15 @@ public class TransferChannelService {
         }
     }
 
+    public boolean isHaveOpenChannel() {
+        for (ChannelInfo channelInfo : transferChannelList) {
+            if (channelInfo.getChannel().isOpen()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public synchronized Channel getReadyTransferChannel() {
         if (transferChannelList.size() > 0) {
             int temp = index;
@@ -56,7 +65,7 @@ public class TransferChannelService {
         }
     }
 
-    public void clearAllChannel() {
+    public void clear() {
         Iterator<ChannelInfo> iterator = transferChannelList.iterator();
         if (iterator.hasNext()) {
             ChannelInfo channelInfo = iterator.next();

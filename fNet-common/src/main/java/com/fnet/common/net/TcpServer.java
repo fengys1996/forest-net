@@ -35,32 +35,27 @@ public class TcpServer {
         }
     }
 
+    /**
+     * can be override
+     */
     public void doSomeThingAfterConnectSuccess(Channel channel) {
-        // can be override
+
     }
 
+    public static EventLoopGroup eventLoopGroup;
+
     public void startConnect(String host, int port, ChannelInitializer<SocketChannel> channelInitializer) throws InterruptedException {
-        EventLoopGroup eventLoopGroup = new NioEventLoopGroup(8);
-        try {
-            Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(eventLoopGroup)
-                    .channel(NioSocketChannel.class)
-                    .option(ChannelOption.TCP_NODELAY, true)
-                    .handler(channelInitializer);
-            bootstrap.connect(host, port).addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture future) throws Exception {
-                    if (future.isSuccess()) {
-                        System.out.println("success");
-                        doSomeThingAfterConnectSuccess(future.channel());
-                        //future.channel().closeFuture().sync();
-                    } else {
-                        System.out.println("failed");
-                    }
-                }
-            }).sync();
-        } finally {
-//            eventLoopGroup.shutdownGracefully();
-        }
+        eventLoopGroup = new NioEventLoopGroup(8);
+        Bootstrap bootstrap = new Bootstrap();
+        bootstrap.group(eventLoopGroup)
+                .channel(NioSocketChannel.class)
+                .option(ChannelOption.TCP_NODELAY, true)
+                .handler(channelInitializer);
+        bootstrap.connect(host, port).addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                if (future.isSuccess()) doSomeThingAfterConnectSuccess(future.channel());
+            }
+        }).sync();
     }
 }
