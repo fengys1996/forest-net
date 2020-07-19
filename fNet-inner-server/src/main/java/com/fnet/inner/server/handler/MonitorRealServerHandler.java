@@ -6,7 +6,9 @@ import com.fnet.inner.server.service.ContactOfOuterToInnerChannel;
 import com.fnet.inner.server.service.InnerSender;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
 
     private Message message;
@@ -17,19 +19,18 @@ public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("add!!!inner channel hashcode=" + ctx.channel().hashCode() + "...outerChannel id:" + message.getOuterChannelId());
+        log.info("A channel connect real server!");
         ContactOfOuterToInnerChannel.getInstance().addToMap(message.getOuterChannelId(), ctx.channel());
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("accept message from real server!");
         InnerSender.getInstance().sendMessageToTransferChannel(new Message(MessageType.TRANSFER_DATA, message.getOuterChannelId(), (byte[])msg));
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("real channel in active!");
+        log.info("A channel disconnect real server!");
         ContactOfOuterToInnerChannel.getInstance().removeFromMap(message.getOuterChannelId());
     }
 }

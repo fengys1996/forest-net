@@ -7,7 +7,7 @@ import com.fnet.common.transferProtocol.MessageType;
 public class HeartBeatResponseResolver implements MessageResolver {
     @Override
     public void resolve(Message message) throws InterruptedException {
-        
+        // temporary do nothing
     }
 
     @Override

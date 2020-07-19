@@ -9,7 +9,6 @@ public class HeartBeatResolver implements MessageResolver {
 
     @Override
     public void resolve(Message message) {
-        System.out.println("inner server accept heart beat!");
         InnerSender.getInstance().sendHearBeatResponseMessage();
     }
 

@@ -25,7 +25,6 @@ public class InnerSender extends AbstractSender {
     @Override
     public void sendBytesToRealServer(Channel channel, Message message) {
         if (channel == null) {
-            System.out.println("Have not inner channel to send bytes to real server!");
         } else if(channel.isOpen()) {
             channel.writeAndFlush(message.getData());
         }
