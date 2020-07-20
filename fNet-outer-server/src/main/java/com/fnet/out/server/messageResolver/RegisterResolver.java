@@ -20,7 +20,6 @@ public class RegisterResolver implements MessageResolver {
         byte[] data = message.getData();
         if (data != null) {
             String password = new String(data);
-            System.out.println(Config.PASSWORD + "~" + password);
             if (Config.PASSWORD.equals(password)) {
                 OuterSender.getInstance().sendRegisterResponseMessage(true);
                 startMonitorBrowser();
