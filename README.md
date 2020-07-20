@@ -24,7 +24,7 @@ Intranet penetration tool（内网穿透工具）
  
 ## 使用说明
 - 下载地址（outer Server）：[https://github.com/Fengys123/fNet/releases/download/v1.0.0/fNet-outer-server.jar](https://github.com/Fengys123/fNet/releases/download/v1.0.0/fNet-outer-server.jar)
-下载地址（inner Server）：[https://github.com/Fengys123/fNet/releases/download/v1.0.0/fNet-inner-server.jar](https://github.com/Fengys123/fNet/releases/download/v1.0.0/fNet-inner-server.jar)
+- 下载地址（inner Server）：[https://github.com/Fengys123/fNet/releases/download/v1.0.0/fNet-inner-server.jar](https://github.com/Fengys123/fNet/releases/download/v1.0.0/fNet-inner-server.jar)
 - 如何启动
  1. 启动outer Server。命令如下。
 		`java -jar fNet-outer-server.jar -port 9090 -password 12345678 -remotePort 8081`
