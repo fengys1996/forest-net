@@ -25,8 +25,6 @@ public class OuterSender extends AbstractSender {
 
         if (outerChannel != null && outerChannel.isOpen()) {
             outerChannel.writeAndFlush(message.getData());
-        } else {
-            System.out.println("have no channel to Browser!!!");
         }
     }
 

@@ -5,12 +5,14 @@ import com.fnet.common.transferProtocol.MessageType;
 import com.fnet.out.server.service.OuterChannelDataService;
 import com.fnet.out.server.service.OuterSender;
 import io.netty.channel.*;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class MonitorBrowserHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("browser is a socket connect!" + "The hashcode is " + ctx.channel().hashCode());
+        log.info("A channel connect browser!");
         OuterChannelDataService.getInstance().addToOuterChannelMap(ctx.channel());
     }
 
@@ -28,7 +30,7 @@ public class MonitorBrowserHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("browser is socket disconnect!" + "The hashcode is = " + ctx.channel().hashCode());
+        log.info("A socket disconnect browser!");
         OuterChannelDataService.getInstance().removeOuterChannel(ctx.channel());
     }
 }

@@ -9,7 +9,6 @@ public class HeartBeatResolver implements MessageResolver {
 
     @Override
     public void resolve(Message message) {
-        System.out.println("outer server accept heart beat!hashcode:" + this.hashCode());
         OuterSender.getInstance().sendHearBeatResponseMessage();
     }
 

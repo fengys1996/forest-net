@@ -7,9 +7,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 
+@Slf4j
 public class TcpServer {
 
     public void startMonitor(int port, ChannelInitializer<SocketChannel> channelInitializer) throws InterruptedException {
@@ -24,9 +26,9 @@ public class TcpServer {
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     .localAddress(new InetSocketAddress(port))
                     .childHandler(channelInitializer);
-            System.out.println("start Monitor Transfer Server!!!");
+            log.info("start Monitor Transfer Server!");
             ChannelFuture channelFuture = bootstrap.bind().sync();
-            System.out.println("listen port:" + port);
+            log.info("listen port: {}", port);
             channelFuture.channel().closeFuture().sync();
         }
         finally {
