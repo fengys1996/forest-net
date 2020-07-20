@@ -30,7 +30,7 @@ public class MonitorBrowserHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        log.info("A socket disconnect browser!");
+        log.info("A channel disconnect browser!");
         OuterChannelDataService.getInstance().removeOuterChannel(ctx.channel());
     }
 }
