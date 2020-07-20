@@ -30,7 +30,7 @@ Intranet penetration tool（内网穿透工具）
 		`java -jar fNet-outer-server.jar -port 9090 -password 12345678 -remotePort 8081`
 		
 		参数说明
-		port：              供inner Server连接的端口。
+		port：       供inner Server连接的端口。
 		remotePort： 供浏览器连接的端口。
 		password：   inner Server连接outer Server的凭证。
  3.  启动inner Server。命令如下。
