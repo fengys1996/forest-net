@@ -2,7 +2,7 @@ package com.fnet.common.config;
 
 public interface ConfigService {
 
-    void setInnerServerConfig();
+    void setInnerServerConfig(String[] args) throws Exception;
 
-    void setOuterServerConfig();
+    void setOuterServerConfig(String[] args) throws Exception;
 }

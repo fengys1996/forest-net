@@ -26,7 +26,6 @@ public class TcpServer {
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     .localAddress(new InetSocketAddress(port))
                     .childHandler(channelInitializer);
-            log.info("start Monitor Transfer Server!");
             ChannelFuture channelFuture = bootstrap.bind().sync();
             log.info("listen port: {}", port);
             channelFuture.channel().closeFuture().sync();

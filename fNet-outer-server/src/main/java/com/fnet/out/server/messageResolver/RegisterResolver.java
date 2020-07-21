@@ -38,7 +38,7 @@ public class RegisterResolver implements MessageResolver {
     private void startMonitorBrowser() {
         new Thread(() -> {
             try {
-                new TcpServer().startMonitor(Config.DEFAULT_OUTER_REMOTE_PORT, new ChannelInitializer<SocketChannel>() {
+                new TcpServer().startMonitor(Config.OUTER_REMOTE_PORT, new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new ByteArrayEncoder(), new ByteArrayDecoder(), new MonitorBrowserHandler());
