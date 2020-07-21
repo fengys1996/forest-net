@@ -12,7 +12,7 @@ Intranet penetration tool（内网穿透工具）
 
 ## 架构说明
 - 当启动outer Server时，默认监听9091端口。9091端口用于连接inner server。
-- 当启动inner Server时，发起对outer Server 909端口的连接，当连接成功时，inner Server会发出注册信号给outer Server。
+- 当启动inner Server时，发起对outer Server 9091端口的连接，当连接成功时，inner Server会发出注册信号给outer Server。
 - outer Server接收到注册信号，会验证密码是否正确，如果正确，outer Server则会监听8080端口，用于连接浏览器，完成连接后，返回一个注册成功的信息给Inner Server。
 - 当outer and inner Server正确启动时，浏览器发出请求，outer Server接收到请求，会将请求通过inner to outer的Channel，传输给inner Server。注意，需要按照指定的传输协议进行数据传输。
 - 当inner Server接收到数据时，会建立一个与tomcat连接的channel（如果对应的channel已经存在，则无需重复建立与tomcat的channel，具体在开发者文档中详细描述），用于数据传输，并将数据传输给tomcat。
