@@ -21,26 +21,24 @@ public class TransferResolver implements MessageResolver {
         int outerChannelId;
         Channel innerChannel;
 
-        synchronized (TransferResolver.class) {
-            outerChannelId = message.getOuterChannelId();
-            innerChannel = ContactOfOuterToInnerChannel.getInstance().getInnerChannel(outerChannelId);
+        outerChannelId = message.getOuterChannelId();
+        innerChannel = ContactOfOuterToInnerChannel.getInstance().getInnerChannel(outerChannelId);
 
-            if (innerChannel != null) {
-                InnerSender.getInstance().sendBytesToRealServer(message);
-            } else {
-                new TcpServer(){
-                    @Override
-                    public void doSomeThingAfterConnectSuccess(Channel channel) {
-                        ContactOfOuterToInnerChannel.getInstance().addToMap(message.getOuterChannelId(), channel);
-                        InnerSender.getInstance().sendBytesToRealServer(channel, message);
-                    }
-                }.startConnect(Config.REAL_SERVER_ADDRESS, Config.REAL_SERVER_PORT, new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new ByteArrayDecoder(), new ByteArrayEncoder(), new MonitorRealServerHandler(message));
-                    }
-                });
-            }
+        if (innerChannel != null) {
+            InnerSender.getInstance().sendBytesToRealServer(message);
+        } else {
+            new TcpServer(){
+                @Override
+                public void doSomeThingAfterConnectSuccess(Channel channel) {
+                    ContactOfOuterToInnerChannel.getInstance().addToMap(message.getOuterChannelId(), channel);
+                    InnerSender.getInstance().sendBytesToRealServer(channel, message);
+                }
+            }.startConnect(Config.REAL_SERVER_ADDRESS, Config.REAL_SERVER_PORT, new ChannelInitializer<SocketChannel>() {
+                @Override
+                protected void initChannel(SocketChannel ch) throws Exception {
+                    ch.pipeline().addLast(new ByteArrayDecoder(), new ByteArrayEncoder(), new MonitorRealServerHandler(message));
+                }
+            });
         }
     }
 
