@@ -37,7 +37,7 @@ public class TcpServer {
     }
 
     /**
-     * can be override
+     * can be override by subclass
      */
     public void doSomeThingAfterConnectSuccess(Channel channel) {
 
@@ -54,7 +54,7 @@ public class TcpServer {
                 .handler(channelInitializer);
         bootstrap.connect(host, port).addListener(new ChannelFutureListener() {
             @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
+            public void operationComplete(ChannelFuture future) {
                 if (future.isSuccess()) doSomeThingAfterConnectSuccess(future.channel());
             }
         }).sync();

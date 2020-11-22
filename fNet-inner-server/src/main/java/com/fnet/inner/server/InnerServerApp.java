@@ -20,7 +20,7 @@ public class InnerServerApp {
         if (Config.isInnerServerConfigComplete()) {
             new TcpServer().startConnect(Config.OUTER_SERVER_ADDRESS , Config.OUTER_SERVER_PORT, new ChannelInitializer<SocketChannel>() {
                 @Override
-                protected void initChannel(SocketChannel ch) throws Exception {
+                protected void initChannel(SocketChannel ch) {
                     ch.pipeline().addLast(new MessageDecoder(), new MessageEncoder(),
                             new IdleStateHandler(30, 30, 30), new MonitorOuterServerHandler());
                 }

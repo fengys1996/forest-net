@@ -14,7 +14,7 @@ import java.util.List;
 public class MessageDecoder extends ReplayingDecoder<Void> {
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         int messageType = in.readInt();
         int outerChannelId = in.readInt();
         int length = in.readInt();
