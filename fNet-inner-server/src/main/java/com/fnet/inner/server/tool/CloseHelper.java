@@ -1,13 +1,13 @@
 package com.fnet.inner.server.tool;
 
 import com.fnet.common.net.TcpServer;
-import com.fnet.common.service.TransferChannelService;
+import com.fnet.inner.server.service.InnerSender;
 
 public class CloseHelper {
     public static void closeInnerServer() {
         new Thread(()-> {
             try {
-                TransferChannelService.getInstance().clear();
+                InnerSender.getInstance().getTransfer().free();
                 TcpServer.eventLoopGroup.shutdownGracefully().sync();
             } catch (InterruptedException e) {
                 e.printStackTrace();

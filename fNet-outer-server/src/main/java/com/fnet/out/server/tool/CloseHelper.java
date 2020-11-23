@@ -1,11 +1,11 @@
 package com.fnet.out.server.tool;
 
-import com.fnet.common.service.TransferChannelService;
 import com.fnet.out.server.service.OuterChannelDataService;
+import com.fnet.out.server.service.OuterSender;
 
 public class CloseHelper {
     public static void clearData() {
-        TransferChannelService.getInstance().clear();
+        OuterSender.getInstance().getTransfer().free();
         OuterChannelDataService.getInstance().clear();
     }
 }

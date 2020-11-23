@@ -1,7 +1,7 @@
 package com.fnet.common.codec;
 
-import com.fnet.common.transferProtocol.MessageType;
-import com.fnet.common.transferProtocol.Message;
+import com.fnet.common.transfer.protocol.MessageType;
+import com.fnet.common.transfer.protocol.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;

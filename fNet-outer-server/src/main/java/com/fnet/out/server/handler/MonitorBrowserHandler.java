@@ -1,7 +1,7 @@
 package com.fnet.out.server.handler;
 
-import com.fnet.common.transferProtocol.Message;
-import com.fnet.common.transferProtocol.MessageType;
+import com.fnet.common.transfer.protocol.Message;
+import com.fnet.common.transfer.protocol.MessageType;
 import com.fnet.out.server.service.OuterChannelDataService;
 import com.fnet.out.server.service.OuterSender;
 import io.netty.channel.*;

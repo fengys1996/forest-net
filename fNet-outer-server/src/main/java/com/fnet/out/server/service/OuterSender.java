@@ -1,9 +1,8 @@
 package com.fnet.out.server.service;
 
 import com.fnet.common.service.AbstractSender;
-import com.fnet.common.service.TransferChannelService;
-import com.fnet.common.transferProtocol.Message;
-import com.fnet.common.transferProtocol.MessageType;
+import com.fnet.common.transfer.protocol.Message;
+import com.fnet.common.transfer.protocol.MessageType;
 import io.netty.channel.Channel;
 
 public class OuterSender extends AbstractSender {
@@ -30,15 +29,11 @@ public class OuterSender extends AbstractSender {
 
     public void sendRegisterResponseMessage(boolean isSuccess) {
         Message message;
-        Channel readyTransferChannel;
         if (isSuccess) {
             message = new Message(MessageType.REGISTER_RESULT, 0, "true".getBytes());
         } else {
             message = new Message(MessageType.REGISTER_RESULT, 0, "false".getBytes());
         }
-        readyTransferChannel = TransferChannelService.getInstance().getReadyTransferChannel();
-        if (readyTransferChannel != null && readyTransferChannel.isOpen()) {
-            readyTransferChannel.writeAndFlush(message);
-        }
+        transfer.transferData(message);
     }
 }

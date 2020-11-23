@@ -1,6 +1,6 @@
 package com.fnet.common.service;
 
-import com.fnet.common.transferProtocol.Message;
+import com.fnet.common.transfer.protocol.Message;
 import io.netty.channel.Channel;
 
 public interface Sender {

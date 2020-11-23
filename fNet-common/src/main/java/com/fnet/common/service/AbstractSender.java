@@ -1,26 +1,40 @@
 package com.fnet.common.service;
 
 import com.fnet.common.config.Config;
-import com.fnet.common.transferProtocol.Message;
-import com.fnet.common.transferProtocol.MessageType;
+import com.fnet.common.transfer.MultiChannelTransfer;
+import com.fnet.common.transfer.SingleChannelTransfer;
+import com.fnet.common.transfer.Transfer;
+import com.fnet.common.transfer.protocol.Message;
+import com.fnet.common.transfer.protocol.MessageType;
 import io.netty.channel.Channel;
 
 public abstract class AbstractSender implements Sender {
+
+    private static final Transfer DEFAULT_TRANSFER = new SingleChannelTransfer();
+    private static final Transfer MULTI_TRANSFER = new MultiChannelTransfer();
 
     public static final Message HEART_BEAT_MESSAGE = new Message(MessageType.HEART_BEAT);
     public static final Message HEART_BEAT_RESPONSE_MESSAGE = new Message(MessageType.HEART_BEAT_RESPONSE);
     public static final Message DISCONNECT_MESSAGE = new Message(MessageType.DISCONNECT);
 
+    protected Transfer transfer = DEFAULT_TRANSFER;
+
+    public Transfer getTransfer() {
+        return transfer;
+    }
+
+    public void setMultiTransfer() {
+        this.transfer = MULTI_TRANSFER;
+    }
+
     @Override
     public void sendMessageToTransferChannel(Message message) {
-        Channel readyTransferChannel = TransferChannelService.getInstance().getReadyTransferChannel();
-        readyTransferChannel.writeAndFlush(message);
+        transfer.transferData(message);
     }
 
     @Override
     public void sendRegisterMessage() {
-        Channel readyTransferChannel = TransferChannelService.getInstance().getReadyTransferChannel();
-        sendRegisterMessage(readyTransferChannel);
+        transfer.transferData(new Message(MessageType.REGISTER, 0, Config.PASSWORD.getBytes()));
     }
 
     @Override
@@ -32,8 +46,7 @@ public abstract class AbstractSender implements Sender {
 
     @Override
     public void sendHeartBeatMessage() {
-        Channel readyTransferChannel = TransferChannelService.getInstance().getReadyTransferChannel();
-        sendHeartBeatMessage(readyTransferChannel);
+        transfer.transferData(HEART_BEAT_MESSAGE);
     }
 
     @Override
@@ -45,8 +58,7 @@ public abstract class AbstractSender implements Sender {
 
     @Override
     public void sendHearBeatResponseMessage() {
-        Channel readyTransferChannel = TransferChannelService.getInstance().getReadyTransferChannel();
-        sendHearBeatResponseMessage(readyTransferChannel);
+        transfer.transferData(HEART_BEAT_RESPONSE_MESSAGE);
     }
 
     @Override
@@ -58,8 +70,7 @@ public abstract class AbstractSender implements Sender {
 
     @Override
     public void sendDisconnectMessage() {
-        Channel readyTransferChannel = TransferChannelService.getInstance().getReadyTransferChannel();
-        sendDisconnectMessage(readyTransferChannel);
+        transfer.transferData(DISCONNECT_MESSAGE);
     }
 
     @Override

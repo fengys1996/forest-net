@@ -1,4 +1,4 @@
-package com.fnet.common.transferProtocol;
+package com.fnet.common.transfer.protocol;
 
 public enum MessageType {
 

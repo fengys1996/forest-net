@@ -1,4 +1,4 @@
-package com.fnet.common.transferProtocol;
+package com.fnet.common.transfer.protocol;
 
 /**
  * Carrier of communication(outer server <-> inner server)

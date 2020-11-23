@@ -2,9 +2,9 @@ package com.fnet.out.server.messageResolver;
 
 import com.fnet.common.config.Config;
 import com.fnet.common.net.TcpServer;
-import com.fnet.common.transferProtocol.Message;
-import com.fnet.common.transferProtocol.MessageResolver;
-import com.fnet.common.transferProtocol.MessageType;
+import com.fnet.common.transfer.protocol.Message;
+import com.fnet.common.transfer.protocol.MessageResolver;
+import com.fnet.common.transfer.protocol.MessageType;
 import com.fnet.out.server.handler.MonitorBrowserHandler;
 import com.fnet.out.server.service.OuterSender;
 import com.fnet.out.server.tool.CloseHelper;

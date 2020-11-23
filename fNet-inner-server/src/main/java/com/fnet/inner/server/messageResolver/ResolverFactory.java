@@ -1,7 +1,7 @@
 package com.fnet.inner.server.messageResolver;
 
-import com.fnet.common.transferProtocol.Message;
-import com.fnet.common.transferProtocol.MessageResolver;
+import com.fnet.common.transfer.protocol.Message;
+import com.fnet.common.transfer.protocol.MessageResolver;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,9 +2,9 @@ package com.fnet.inner.server.messageResolver;
 
 import com.fnet.common.config.Config;
 import com.fnet.common.net.TcpServer;
-import com.fnet.common.transferProtocol.Message;
-import com.fnet.common.transferProtocol.MessageResolver;
-import com.fnet.common.transferProtocol.MessageType;
+import com.fnet.common.transfer.protocol.Message;
+import com.fnet.common.transfer.protocol.MessageResolver;
+import com.fnet.common.transfer.protocol.MessageType;
 import com.fnet.inner.server.service.ContactOfOuterToInnerChannel;
 import com.fnet.inner.server.service.InnerSender;
 import com.fnet.inner.server.handler.MonitorRealServerHandler;

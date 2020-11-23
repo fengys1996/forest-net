@@ -1,8 +1,8 @@
 package com.fnet.inner.server.handler;
 
 import com.fnet.common.handler.CommonHandler;
-import com.fnet.common.service.TransferChannelService;
-import com.fnet.common.transferProtocol.Message;
+import com.fnet.common.transfer.Transfer;
+import com.fnet.common.transfer.protocol.Message;
 import com.fnet.inner.server.service.InnerSender;
 import com.fnet.inner.server.messageResolver.ResolverContext;
 import com.fnet.inner.server.tool.CloseHelper;
@@ -13,9 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 public class MonitorOuterServerHandler extends CommonHandler {
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        TransferChannelService.getInstance().addTransferChannel(ctx.channel());
-        InnerSender.getInstance().sendRegisterMessage(ctx.channel());
+    public void channelActive(ChannelHandlerContext ctx) {
+        InnerSender innerSender = InnerSender.getInstance();
+        Transfer transfer = innerSender.getTransfer();
+        transfer.addTransferChannel(ctx.channel());
+        innerSender.sendRegisterMessage(ctx.channel());
     }
 
     @Override
@@ -24,10 +26,11 @@ public class MonitorOuterServerHandler extends CommonHandler {
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    public void channelInactive(ChannelHandlerContext ctx) {
         log.info("channel inactive! Transfer channel is removed!");
-        TransferChannelService.getInstance().removeTransferChannel(ctx.channel());
-        boolean haveOenChannel = TransferChannelService.getInstance().isHaveOpenChannel();
-        if (!haveOenChannel)  CloseHelper.closeInnerServer();
+        InnerSender.getInstance().getTransfer().removeTransferChannel(ctx.channel());
+        CloseHelper.closeInnerServer();
+        /*boolean haveOenChannel = TransferChannelService.getInstance().isHaveOpenChannel();
+        if (!haveOenChannel)  CloseHelper.closeInnerServer();*/
     }
 }

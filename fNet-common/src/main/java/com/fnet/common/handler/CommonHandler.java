@@ -1,8 +1,6 @@
 package com.fnet.common.handler;
 
 import com.fnet.common.service.AbstractSender;
-import com.fnet.common.transferProtocol.MessageType;
-import com.fnet.common.transferProtocol.Message;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;

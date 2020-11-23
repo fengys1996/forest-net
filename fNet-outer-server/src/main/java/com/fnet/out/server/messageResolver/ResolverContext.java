@@ -1,7 +1,7 @@
 package com.fnet.out.server.messageResolver;
 
-import com.fnet.common.transferProtocol.Message;
-import com.fnet.common.transferProtocol.MessageResolver;
+import com.fnet.common.transfer.protocol.Message;
+import com.fnet.common.transfer.protocol.MessageResolver;
 
 public class ResolverContext {
     public static void resolverMessage(Message message) throws InterruptedException {
