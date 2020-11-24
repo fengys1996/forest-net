@@ -16,6 +16,7 @@ public class CmdConfigService implements ConfigService {
         options.addOption("rsa", true, "Real server address!");
 
         options.addOption("pwd", true, "Password!");
+        options.addOption("nt", true, "Numbers of transfer channel");
 
         CommandLineParser parser = new DefaultParser();
         CommandLine commandLine = parser.parse(options, args);
@@ -31,6 +32,7 @@ public class CmdConfigService implements ConfigService {
 
             Config.REAL_SERVER_PORT = Integer.parseInt(commandLine.getOptionValue("rsp", String.valueOf(Config.DEFAULT_REAL_SERVER_PORT)));
             Config.REAL_SERVER_ADDRESS = commandLine.getOptionValue("rsa", Config.DEFAULT_REAL_SERVER_ADDRESS);
+            Config.TRANSFER_CHANNEL_NUMBERS = Integer.parseInt(commandLine.getOptionValue("nt", String.valueOf(Config.DEFAULT_TRANSFER_CHANNEL_NUMBERS)));
         }
     }
 

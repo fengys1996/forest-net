@@ -12,12 +12,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MonitorOuterServerHandler extends CommonHandler {
 
+    private static boolean firstInit = true;
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         InnerSender innerSender = InnerSender.getInstance();
         Transfer transfer = innerSender.getTransfer();
         transfer.addTransferChannel(ctx.channel());
-        innerSender.sendRegisterMessage(ctx.channel());
+        synchronized (MonitorOuterServerHandler.class) {
+            if (firstInit) {
+                innerSender.sendRegisterMessage(ctx.channel());
+                firstInit = false;
+            }
+        }
     }
 
     @Override

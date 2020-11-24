@@ -1,49 +1,54 @@
 package com.fnet.common.transfer;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelException;
-import io.netty.channel.ChannelOutboundInvoker;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MultiChannelTransfer extends AbatractTransfer {
+    public static final int MAX_NUM_OF_TRANSFER_CHANNEL = 10;
 
-    /**
-     * ArrayList is not thread safe, but netty thread for receiving connections is a single thread.
-     * So addTransferChannel{@link #addTransferChannel(Channel)} is thread safe.
-     */
-    private final List<Channel> transferChannelList = new ArrayList<>();
+    private final List<Channel> transferChannelList = new ArrayList<>(MAX_NUM_OF_TRANSFER_CHANNEL);
 
-
-    /**
-     * To be optimized
-     */
     @Override
     public Channel getAvailableTransferChannel(int outChannelID) {
-        Channel channel = transferChannelList.get(outChannelID % transferChannelList.size());
-        if (channel == null) {
-            throw new NullPointerException("multi transfer channel is not available!");
+        int index = Math.abs(outChannelID % transferChannelList.size());
+        int circleNum = 0;
+        while (circleNum < transferChannelList.size()) {
+            if (transferChannelList.get(index) != null && transferChannelList.get(index).isOpen()) {
+                return transferChannelList.get(index);
+            }
+            index = (index + 1) % transferChannelList.size();
+            circleNum++;
         }
-        if (!channel.isOpen()) {
-            throw new ChannelException("a multi transfer channel is not open![hashcode = " + channel.hashCode() + "]");
-        }
-        return channel;
+        return null;
     }
 
     @Override
-    public void addTransferChannel(Channel channel) {
+    public synchronized void addTransferChannel(Channel channel) {
+        for (int i = 0; i < transferChannelList.size(); i++) {
+            if (transferChannelList.get(i) == null) {
+                transferChannelList.set(i, channel);
+                return;
+            }
+        }
         transferChannelList.add(channel);
     }
 
     @Override
     public void removeTransferChannel(Channel channel) {
-        transferChannelList.remove(channel);
+        for (int i = 0; i < transferChannelList.size(); i++) {
+            if (transferChannelList.get(i) == channel) {
+                transferChannelList.set(i, null);
+            }
+        }
     }
 
     @Override
     public void free() {
-        transferChannelList.forEach(ChannelOutboundInvoker::close);
+        transferChannelList.forEach(o -> {
+            if (o != null)  o.close();
+        });
         transferChannelList.clear();
     }
 }

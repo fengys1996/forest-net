@@ -1,5 +1,6 @@
 package com.fnet.inner.server.service;
 
+import com.fnet.common.config.Config;
 import com.fnet.common.service.AbstractSender;
 import com.fnet.common.transfer.protocol.Message;
 import io.netty.channel.Channel;
@@ -13,6 +14,9 @@ public class InnerSender extends AbstractSender {
     }
 
     public static InnerSender getInstance() {
+        if (Config.TRANSFER_CHANNEL_NUMBERS > 1) {
+            innerSender.setMultiTransfer();
+        }
         return innerSender;
     }
 

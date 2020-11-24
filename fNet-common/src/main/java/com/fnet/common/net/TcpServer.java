@@ -45,18 +45,20 @@ public class TcpServer {
 
     public static EventLoopGroup eventLoopGroup;
 
-    public void startConnect(String host, int port, ChannelInitializer<SocketChannel> channelInitializer) throws InterruptedException {
+    public void startConnect(String host, int port, ChannelInitializer<SocketChannel> channelInitializer, int tcpNumber) throws InterruptedException {
         eventLoopGroup = new NioEventLoopGroup(8);
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .handler(channelInitializer);
-        bootstrap.connect(host, port).addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture future) {
-                if (future.isSuccess()) doSomeThingAfterConnectSuccess(future.channel());
-            }
-        }).sync();
+        for (int i = 0; i < tcpNumber; i++) {
+            bootstrap.connect(host, port).addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) {
+                    if (future.isSuccess()) doSomeThingAfterConnectSuccess(future.channel());
+                }
+            }).sync();
+        }
     }
 }

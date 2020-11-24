@@ -1,5 +1,6 @@
 package com.fnet.out.server.service;
 
+import com.fnet.common.config.Config;
 import com.fnet.common.service.AbstractSender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
@@ -14,6 +15,9 @@ public class OuterSender extends AbstractSender {
     }
 
     public static OuterSender getInstance() {
+        if (Config.TRANSFER_CHANNEL_NUMBERS > 1) {
+            outerSender.setMultiTransfer();
+        }
         return outerSender;
     }
 
