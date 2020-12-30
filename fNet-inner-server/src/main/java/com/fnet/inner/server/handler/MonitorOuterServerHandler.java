@@ -1,16 +1,16 @@
 package com.fnet.inner.server.handler;
 
-import com.fnet.common.handler.CommonHandler;
 import com.fnet.common.transfer.Transfer;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.inner.server.service.InnerSender;
 import com.fnet.inner.server.messageResolver.ResolverContext;
 import com.fnet.inner.server.tool.CloseHelper;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MonitorOuterServerHandler extends CommonHandler {
+public class MonitorOuterServerHandler extends ChannelInboundHandlerAdapter {
 
     private static boolean firstInit = true;
 

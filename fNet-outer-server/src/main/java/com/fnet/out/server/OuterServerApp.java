@@ -6,6 +6,7 @@ import com.fnet.common.config.Config;
 import com.fnet.common.config.cmd.CmdConfigService;
 import com.fnet.common.net.TcpServer;
 import com.fnet.out.server.handler.MonitorInnerServerHandler;
+import com.fnet.out.server.handler.OuterServerIdleCheckHandler;
 import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -25,8 +26,10 @@ public class OuterServerApp {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {
                     ChannelPipeline pipeline = ch.pipeline();
-                    pipeline.addLast(new MessageDecoder(), new MessageEncoder(), new IdleStateHandler(30, 30, 30),
-                            new MonitorInnerServerHandler());
+                    pipeline.addLast("messageEncoder", new MessageEncoder());
+                    pipeline.addLast("messageDecoder", new MessageDecoder());
+                    pipeline.addLast("idleCheckHandler", new OuterServerIdleCheckHandler());
+                    pipeline.addLast("monitorInnerServerHandler", new MonitorInnerServerHandler());
                 }
             });
         }
