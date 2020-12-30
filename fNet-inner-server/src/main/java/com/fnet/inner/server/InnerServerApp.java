@@ -27,7 +27,7 @@ public class InnerServerApp {
                     pipeline.addLast("messageEncoder", new MessageEncoder());
                     pipeline.addLast("messageDecoder", new MessageDecoder());
                     pipeline.addLast("idleCheckHandler",  new IdleStateHandler(0, 5, 0));
-//                    pipeline.addLast("keepAliveHandler", new KeepAliveHandler());
+                    pipeline.addLast("keepAliveHandler", new KeepAliveHandler());
                     pipeline.addLast("monitorOuterServerHandler", new MonitorOuterServerHandler());
                 }
             }, Config.TRANSFER_CHANNEL_NUMBERS);
