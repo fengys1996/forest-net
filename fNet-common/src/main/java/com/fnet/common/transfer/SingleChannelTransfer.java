@@ -7,6 +7,11 @@ public class SingleChannelTransfer extends AbatractTransfer {
 
     private Channel singleTransferChannel;
 
+    @Override
+    public int getNumsOfTransferChannel() {
+        return 1;
+    }
+
     /**
      * @param outChannelID is not used
      */

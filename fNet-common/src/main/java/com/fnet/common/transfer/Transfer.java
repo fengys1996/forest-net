@@ -5,6 +5,8 @@ import io.netty.channel.Channel;
 
 public interface Transfer {
 
+    int getNumsOfTransferChannel();
+
     Channel getAvailableTransferChannel(int outChannelID);
 
     void addTransferChannel(Channel channel);

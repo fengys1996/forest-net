@@ -11,6 +11,11 @@ public class MultiChannelTransfer extends AbatractTransfer {
     private final List<Channel> transferChannelList = new ArrayList<>(MAX_NUM_OF_TRANSFER_CHANNEL);
 
     @Override
+    public int getNumsOfTransferChannel() {
+        return transferChannelList.size();
+    }
+
+    @Override
     public Channel getAvailableTransferChannel(int outChannelID) {
         int index = Math.abs(outChannelID % transferChannelList.size());
         int circleNum = 0;
