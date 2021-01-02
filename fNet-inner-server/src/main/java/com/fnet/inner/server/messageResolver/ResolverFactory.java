@@ -14,8 +14,6 @@ public class ResolverFactory {
         resolvers.add(new DisconnectResolver());
         resolvers.add(new HeartBeatResolver());
         resolvers.add(new TransferResolver());
-        resolvers.add(new HeartBeatResponseResolver());
-        resolvers.add(new RegisterResultResolver());
     }
 
     private ResolverFactory() {

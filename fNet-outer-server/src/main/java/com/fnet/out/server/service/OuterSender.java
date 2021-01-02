@@ -21,7 +21,6 @@ public class OuterSender extends AbstractSender {
         return outerSender;
     }
 
-    @Override
     public void sendBytesToBrowser(Message message) {
         Channel outerChannel;
         outerChannel = OuterChannelDataService.getInstance().getOuterChannelById(message.getOuterChannelId());
@@ -31,13 +30,13 @@ public class OuterSender extends AbstractSender {
         }
     }
 
-    public void sendRegisterResponseMessage(boolean isSuccess) {
+    public void sendRegisterResponseMessage(boolean isSuccess, Channel channel) {
         Message message;
         if (isSuccess) {
             message = new Message(MessageType.REGISTER_RESULT, 0, "true".getBytes());
         } else {
             message = new Message(MessageType.REGISTER_RESULT, 0, "false".getBytes());
         }
-        transfer.transferData(message);
+        channel.writeAndFlush(message);
     }
 }

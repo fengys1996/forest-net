@@ -4,7 +4,6 @@ import com.fnet.common.transfer.Transfer;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.inner.server.service.InnerSender;
 import com.fnet.inner.server.messageResolver.ResolverContext;
-import com.fnet.inner.server.tool.CloseHelper;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,19 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MonitorOuterServerHandler extends ChannelInboundHandlerAdapter {
 
-    private static boolean firstInit = true;
-
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         InnerSender innerSender = InnerSender.getInstance();
         Transfer transfer = innerSender.getTransfer();
         transfer.addTransferChannel(ctx.channel());
-        synchronized (MonitorOuterServerHandler.class) {
-            if (firstInit) {
-                innerSender.sendRegisterMessage(ctx.channel());
-                firstInit = false;
-            }
-        }
     }
 
     @Override
@@ -33,11 +24,10 @@ public class MonitorOuterServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) {
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         log.info("channel inactive! Transfer channel is removed!");
         InnerSender.getInstance().getTransfer().removeTransferChannel(ctx.channel());
-        CloseHelper.closeInnerServer();
-        /*boolean haveOenChannel = TransferChannelService.getInstance().isHaveOpenChannel();
-        if (!haveOenChannel)  CloseHelper.closeInnerServer();*/
+        ctx.channel().close();
+        super.channelInactive(ctx);
     }
 }

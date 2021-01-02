@@ -9,7 +9,6 @@ public class HeartBeatResolver implements MessageResolver {
 
     @Override
     public void resolve(Message message) {
-        OuterSender.getInstance().sendHearBeatResponseMessage();
     }
 
     @Override

@@ -14,35 +14,24 @@ public enum MessageType {
      */
     REGISTER_RESULT(2),
 
-    /**
-     * update the map in inner server, contain the Correspondence of outer channel and inner channel
-     * direction: outer server -> inner server
-     */
-    UPDATE_CHANNEL_MAP_INFO(3),
 
     /**
      * transfer data
      * direction: outer server <-> inner server
      */
-    TRANSFER_DATA(4),
+    TRANSFER_DATA(3),
 
     /**
      * disconnect
      * direction: outer server <-> inner server
      */
-    DISCONNECT(5),
+    DISCONNECT(4),
 
     /**
      * heart beat
      * direction: outer server <-> inner server
      */
-    HEART_BEAT(6),
-
-    /**
-     * hear beat response
-     * direction: outer server <-> inner server
-     */
-    HEART_BEAT_RESPONSE(7);
+    HEART_BEAT(5);
 
     private int code;
 

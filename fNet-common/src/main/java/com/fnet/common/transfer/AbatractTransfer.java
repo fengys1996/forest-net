@@ -8,6 +8,8 @@ public abstract class AbatractTransfer implements Transfer {
     @Override
     public void transferData(Message message) {
         Channel availableTransferChannel = getAvailableTransferChannel(message.getOuterChannelId());
-        availableTransferChannel.writeAndFlush(message);
+        if (availableTransferChannel != null) {
+            availableTransferChannel.writeAndFlush(message);
+        }
     }
 }

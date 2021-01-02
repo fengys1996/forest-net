@@ -29,8 +29,10 @@ public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) {
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         log.info("A channel disconnect real server!");
         ContactOfOuterToInnerChannel.getInstance().removeFromMap(message.getOuterChannelId());
+        ctx.channel().close();
+        super.channelInactive(ctx);
     }
 }

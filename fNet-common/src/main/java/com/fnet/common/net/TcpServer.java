@@ -43,10 +43,7 @@ public class TcpServer {
 
     }
 
-    public static EventLoopGroup eventLoopGroup;
-
-    public void startConnect(String host, int port, ChannelInitializer<SocketChannel> channelInitializer, int tcpNumber) throws InterruptedException {
-        eventLoopGroup = new NioEventLoopGroup(8);
+    public void startConnect(String host, int port, EventLoopGroup eventLoopGroup, ChannelInitializer<SocketChannel> channelInitializer, int tcpNumber) throws InterruptedException {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)

@@ -31,7 +31,7 @@ public class ThreadPoolUtil {
                                                                                  new DefaultThreadFactory("commonThreadPool"),
                                                                                  new NewThreadPolicy());
 
-    public ExecutorService getCommonExecutor() {
+    public static ExecutorService getCommonExecutor() {
         return commonExecutor;
     }
 }
