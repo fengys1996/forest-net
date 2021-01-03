@@ -21,6 +21,7 @@ public class OuterSender extends AbstractSender {
         return outerSender;
     }
 
+    @Override
     public void sendBytesToBrowser(Message message) {
         Channel outerChannel;
         outerChannel = OuterChannelDataService.getInstance().getOuterChannelById(message.getOuterChannelId());
@@ -30,6 +31,7 @@ public class OuterSender extends AbstractSender {
         }
     }
 
+    @Override
     public void sendRegisterResponseMessage(boolean isSuccess, Channel channel) {
         Message message;
         if (isSuccess) {
