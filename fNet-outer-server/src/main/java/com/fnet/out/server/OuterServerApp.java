@@ -12,6 +12,8 @@ import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
 import org.apache.commons.cli.*;
 
+import static com.fnet.common.net.TcpServer.*;
+
 /**
  * start outer server here
  */
@@ -32,7 +34,7 @@ public class OuterServerApp {
                     pipeline.addLast("idleCheckHandler", new OuterServerIdleCheckHandler());
                     pipeline.addLast("monitorInnerServerHandler", new MonitorInnerServerHandler());
                 }
-            });
+            }, MONITOR_INNER_SERVER_BOSS_EVENTLOOP_GROUP, MONITOR_INNER_SERVER_WORK_EVENTLOOP_GROUP);
         }
     }
 }

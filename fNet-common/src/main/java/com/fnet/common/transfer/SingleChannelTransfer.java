@@ -9,7 +9,7 @@ public class SingleChannelTransfer extends AbatractTransfer {
 
     @Override
     public int getNumsOfTransferChannel() {
-        return 1;
+        return singleTransferChannel == null ? 0 : 1;
     }
 
     /**

@@ -14,10 +14,20 @@ import java.net.InetSocketAddress;
 @Slf4j
 public class TcpServer {
 
-    public void startMonitor(int port, ChannelInitializer<SocketChannel> channelInitializer) throws InterruptedException {
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workGroup = new NioEventLoopGroup(8);
+    // eventLoopGroup in inner Server
+    public static EventLoopGroup CONNECT_REAL_SERVER_EVENTLOOP_GROUP = new NioEventLoopGroup(4);
+    public static EventLoopGroup CONNECT_OUTER_SERVER_EVENTLOOP_GROUP = new NioEventLoopGroup(4);
 
+    // eventLoopGroup in outer server
+    public static EventLoopGroup MONITOR_BROWSER_BOSS_EVENTLOOP_GROUP = new NioEventLoopGroup(1);
+    public static EventLoopGroup MONITOR_BROWSER_WORK_EVENTLOOP_GROUP = new NioEventLoopGroup(8);
+
+    public static EventLoopGroup MONITOR_INNER_SERVER_BOSS_EVENTLOOP_GROUP = new NioEventLoopGroup(1);
+    public static EventLoopGroup MONITOR_INNER_SERVER_WORK_EVENTLOOP_GROUP = new NioEventLoopGroup(8);
+
+
+
+    public void startMonitor(int port, ChannelInitializer<SocketChannel> channelInitializer, EventLoopGroup bossGroup, EventLoopGroup workGroup) throws InterruptedException {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workGroup)
@@ -46,9 +56,9 @@ public class TcpServer {
     public void startConnect(String host, int port, EventLoopGroup eventLoopGroup, ChannelInitializer<SocketChannel> channelInitializer, int tcpNumber) throws InterruptedException {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
-                .channel(NioSocketChannel.class)
-                .option(ChannelOption.TCP_NODELAY, true)
-                .handler(channelInitializer);
+                 .channel(NioSocketChannel.class)
+                 .option(ChannelOption.TCP_NODELAY, true)
+                 .handler(channelInitializer);
         for (int i = 0; i < tcpNumber; i++) {
             bootstrap.connect(host, port).addListener(new ChannelFutureListener() {
                 @Override

@@ -18,14 +18,17 @@ import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
+
+import static com.fnet.common.net.TcpServer.*;
 
 @Slf4j
 public class MonitorInnerServerHandler extends ChannelInboundHandlerAdapter {
 
     private static volatile boolean isMonitorBrower = false;
-    private static int numsOfInvalidChannel = 0;
-    private static final Object lock = new Object();
+    private static int numsOfActiveChannel = 0;
+    private static final Object LOCK = new Object();
 
     @Override
     public void channelActive(ChannelHandlerContext ctx)  {
@@ -33,10 +36,12 @@ public class MonitorInnerServerHandler extends ChannelInboundHandlerAdapter {
         Transfer transfer = OuterSender.getInstance().getTransfer();
         transfer.addTransferChannel(ctx.channel());
         // if init success, then monitor browser
-        if (transfer.getNumsOfTransferChannel() == Config.TRANSFER_CHANNEL_NUMBERS && !isMonitorBrower) {
-            startMonitorBrowser();
-            isMonitorBrower = true;
-            log.info("last init channels!");
+        synchronized (LOCK) {
+            if (++numsOfActiveChannel == Config.TRANSFER_CHANNEL_NUMBERS && !isMonitorBrower) {
+                log.info("Start init monitor browser!");
+                startMonitorBrowser();
+                isMonitorBrower = true;
+            }
         }
     }
 
@@ -56,12 +61,11 @@ public class MonitorInnerServerHandler extends ChannelInboundHandlerAdapter {
         OuterSender.getInstance().getTransfer().removeTransferChannel(channel);
         channel.close();
 
-        synchronized (lock) {
-            if (++numsOfInvalidChannel == Config.TRANSFER_CHANNEL_NUMBERS) {
-                log.info("All transfer channel disconnect!");
+        synchronized (LOCK) {
+            if (--numsOfActiveChannel == 0) {
+                log.info("All transfer channel disconnect, start clean work!");
                 OuterChannelDataService.getInstance().clear();
                 AuthService.getInstance().clearRegisterAuthInfo();
-                numsOfInvalidChannel = 0;
             }
         }
     }
@@ -78,10 +82,22 @@ public class MonitorInnerServerHandler extends ChannelInboundHandlerAdapter {
                                               new ByteArrayDecoder(),
                                               new MonitorBrowserHandler());
                     }
-                });
+                }, MONITOR_BROWSER_BOSS_EVENTLOOP_GROUP, MONITOR_BROWSER_WORK_EVENTLOOP_GROUP);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         });
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+            throws Exception {
+        if (cause instanceof IOException) {
+            if ("远程主机强迫关闭了一个现有的连接。".equals(cause.getMessage())) {
+                log.info("远程主机强迫关闭了一个现有的连接。");
+                return;
+            }
+        }
+        ctx.fireExceptionCaught(cause);
     }
 }

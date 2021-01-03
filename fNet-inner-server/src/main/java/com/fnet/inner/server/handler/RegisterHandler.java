@@ -1,9 +1,11 @@
 package com.fnet.inner.server.handler;
 
+import com.fnet.common.config.Config;
 import com.fnet.common.transfer.Transfer;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
 import com.fnet.inner.server.service.InnerSender;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -15,10 +17,11 @@ public class RegisterHandler extends SimpleChannelInboundHandler<Message>{
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        InnerSender innerSender = InnerSender.getInstance();
-        Transfer transfer = innerSender.getTransfer();
-        transfer.addTransferChannel(ctx.channel());
-        innerSender.sendRegisterMessage(ctx.channel());
+        Channel channel = ctx.channel();
+        if (channel != null && channel.isOpen()) {
+            channel.writeAndFlush(new Message(MessageType.REGISTER, 0, Config.PASSWORD.getBytes()));
+        }
+        super.channelActive(ctx);
     }
 
     @Override
