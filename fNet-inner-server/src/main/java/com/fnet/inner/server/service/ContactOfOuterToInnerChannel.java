@@ -2,13 +2,13 @@ package com.fnet.inner.server.service;
 
 import io.netty.channel.Channel;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ContactOfOuterToInnerChannel {
 
-    private static ContactOfOuterToInnerChannel contactOfOuterToInnerChannel = new ContactOfOuterToInnerChannel();
+    private static final ContactOfOuterToInnerChannel contactOfOuterToInnerChannel = new ContactOfOuterToInnerChannel();
 
     private ContactOfOuterToInnerChannel() {
 
@@ -18,7 +18,7 @@ public class ContactOfOuterToInnerChannel {
         return contactOfOuterToInnerChannel;
     }
 
-    private Map<Integer, Channel> mapOfOuterToInnerChannel = new HashMap<>();
+    private Map<Integer, Channel> mapOfOuterToInnerChannel = new ConcurrentHashMap<>();
 
     public void addToMap(Integer outerChannelId, Channel innerChannel) {
         mapOfOuterToInnerChannel.put(outerChannelId, innerChannel);

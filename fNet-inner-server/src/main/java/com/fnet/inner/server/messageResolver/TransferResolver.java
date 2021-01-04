@@ -35,7 +35,7 @@ public class TransferResolver implements MessageResolver {
                     ContactOfOuterToInnerChannel.getInstance().addToMap(message.getOuterChannelId(), channel);
                     InnerSender.getInstance().sendBytesToRealServer(channel, message);
                 }
-            }.startConnect(Config.REAL_SERVER_ADDRESS, Config.REAL_SERVER_PORT, CONNECT_REAL_SERVER_EVENTLOOP_GROUP, new ChannelInitializer<SocketChannel>() {
+            }.startConnect1(Config.REAL_SERVER_ADDRESS, Config.REAL_SERVER_PORT, CONNECT_REAL_SERVER_EVENTLOOP_GROUP, new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {
                     ch.pipeline().addLast(new ByteArrayDecoder(),
