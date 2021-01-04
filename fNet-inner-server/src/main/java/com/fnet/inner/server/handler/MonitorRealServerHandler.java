@@ -1,5 +1,6 @@
 package com.fnet.inner.server.handler;
 
+import com.fnet.common.service.Sender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
 import com.fnet.inner.server.service.ContactOfOuterToInnerChannel;
@@ -11,10 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
 
-    private Message message;
+    Message message;
+    Sender sender;
 
-    public MonitorRealServerHandler(Message message) {
+    public MonitorRealServerHandler(Message message, Sender sender) {
         this.message = message;
+        this.sender = sender;
     }
 
     @Override
@@ -26,6 +29,11 @@ public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         InnerSender.getInstance().sendMessageToTransferChannel(new Message(MessageType.TRANSFER_DATA, message.getOuterChannelId(), (byte[])msg));
+    }
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        InnerSender.getInstance().flush(ctx.channel().hashCode());
     }
 
     @Override

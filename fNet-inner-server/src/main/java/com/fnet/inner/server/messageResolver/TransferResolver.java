@@ -40,7 +40,7 @@ public class TransferResolver implements MessageResolver {
                 protected void initChannel(SocketChannel ch) throws Exception {
                     ch.pipeline().addLast(new ByteArrayDecoder(),
                                           new ByteArrayEncoder(),
-                                          new MonitorRealServerHandler(message));
+                                          new MonitorRealServerHandler(message, InnerSender.getInstance()));
                 }
             }, 1);
         }

@@ -1,5 +1,6 @@
 package com.fnet.inner.server.handler;
 
+import com.fnet.common.service.Sender;
 import com.fnet.inner.server.service.InnerSender;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,6 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class KeepAliveHandler extends ChannelDuplexHandler {
+
+    Sender sender;
+
+    public KeepAliveHandler(Sender sender) {
+        this.sender = sender;
+    }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {

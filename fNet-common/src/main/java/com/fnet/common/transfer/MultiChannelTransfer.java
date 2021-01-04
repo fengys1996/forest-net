@@ -1,5 +1,6 @@
 package com.fnet.common.transfer;
 
+import com.fnet.common.transfer.protocol.Message;
 import io.netty.channel.Channel;
 
 import java.util.ArrayList;
@@ -57,6 +58,22 @@ public class MultiChannelTransfer extends AbatractTransfer {
                 numsOfTransferChannels.addAndGet(-1);
                 transferChannelList.set(i, null);
             }
+        }
+    }
+
+    @Override
+    public void transferDataNoFlush(Message message) {
+        Channel availableTransferChannel = getAvailableTransferChannel(message.getOuterChannelId());
+        if (availableTransferChannel != null) {
+            availableTransferChannel.write(message);
+        }
+    }
+
+    @Override
+    public void flush(int outChannelId) {
+        Channel availableTransferChannel = getAvailableTransferChannel(outChannelId);
+        if (availableTransferChannel != null) {
+            availableTransferChannel.flush();
         }
     }
 

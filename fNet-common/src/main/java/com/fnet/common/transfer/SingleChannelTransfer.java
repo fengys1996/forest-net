@@ -1,5 +1,6 @@
 package com.fnet.common.transfer;
 
+import com.fnet.common.transfer.protocol.Message;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelException;
 
@@ -34,6 +35,20 @@ public class SingleChannelTransfer extends AbatractTransfer {
     @Override
     public void removeTransferChannel(Channel channel) {
         singleTransferChannel = null;
+    }
+
+    @Override
+    public void transferDataNoFlush(Message message) {
+        if (singleTransferChannel != null) {
+            singleTransferChannel.write(message);
+        }
+    }
+
+    @Override
+    public void flush(int outChannelId) {
+        if (singleTransferChannel != null) {
+            singleTransferChannel.flush();
+        }
     }
 
     @Override

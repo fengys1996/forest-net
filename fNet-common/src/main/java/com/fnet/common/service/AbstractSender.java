@@ -23,7 +23,13 @@ public abstract class AbstractSender implements Sender {
         this.transfer = MULTI_TRANSFER;
     }
 
+    @Override
     public void sendMessageToTransferChannel(Message message) {
-        transfer.transferData(message);
+        transfer.transferDataNoFlush(message);
+    }
+
+    @Override
+    public void flush(int outChannelId) {
+        transfer.flush(outChannelId);
     }
 }

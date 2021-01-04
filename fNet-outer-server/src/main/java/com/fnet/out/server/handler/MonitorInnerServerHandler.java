@@ -8,6 +8,7 @@ import com.fnet.common.service.ThreadPoolUtil;
 import com.fnet.common.transfer.Resolver;
 import com.fnet.out.server.service.AuthService;
 import com.fnet.out.server.service.OuterChannelDataService;
+import com.fnet.out.server.service.OuterSender;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
@@ -56,7 +57,7 @@ public class MonitorInnerServerHandler extends AbstractMonitorHandler {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new ByteArrayEncoder(),
                                               new ByteArrayDecoder(),
-                                              new MonitorBrowserHandler());
+                                              new MonitorBrowserHandler(OuterSender.getInstance()));
                     }
                 }, MONITOR_BROWSER_BOSS_EVENTLOOP_GROUP, MONITOR_BROWSER_WORK_EVENTLOOP_GROUP);
             } catch (InterruptedException e) {

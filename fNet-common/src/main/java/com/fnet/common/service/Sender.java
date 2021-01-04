@@ -7,7 +7,7 @@ import io.netty.channel.Channel;
 public interface Sender {
 
     // common
-    default void sendMessageToTransferChannel() {
+    default void sendMessageToTransferChannel(Message message) {
         throw new UnsupportedOperationException();
     }
 
@@ -34,6 +34,10 @@ public interface Sender {
     }
 
     default void sendRegisterResponseMessage(boolean isSuccess, Channel channel) {
+        throw new UnsupportedOperationException();
+    }
+
+    default void flush(int outChannelId) {
         throw new UnsupportedOperationException();
     }
 }

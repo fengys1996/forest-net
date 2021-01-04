@@ -1,14 +1,20 @@
 package com.fnet.out.server.handler;
 
+import com.fnet.common.service.Sender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
 import com.fnet.out.server.service.OuterChannelDataService;
-import com.fnet.out.server.service.OuterSender;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class MonitorBrowserHandler extends ChannelInboundHandlerAdapter {
+
+    Sender sender;
+
+    public MonitorBrowserHandler(Sender sender) {
+        this.sender = sender;
+    }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -25,7 +31,12 @@ public class MonitorBrowserHandler extends ChannelInboundHandlerAdapter {
         outerChannelId = ctx.channel().hashCode();
 
         Message message = new Message(MessageType.TRANSFER_DATA, outerChannelId, bytes);
-        OuterSender.getInstance().sendMessageToTransferChannel(message);
+        sender.sendMessageToTransferChannel(message);
+    }
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        sender.flush(ctx.channel().hashCode());
     }
 
     @Override

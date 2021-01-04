@@ -40,7 +40,7 @@ public class InnerServerApp {
                     pipeline.addLast("messageDecoder", new MessageDecoder());
                     pipeline.addLast("idleCheckHandler",  new IdleStateHandler(0, 5, 0));
                     pipeline.addLast("registerHandler", new RegisterHandler());
-                    pipeline.addLast("keepAliveHandler", new KeepAliveHandler());
+                    pipeline.addLast("keepAliveHandler", new KeepAliveHandler(sender));
                     pipeline.addLast("monitorOuterServerHandler", new MonitorOuterServerHandler(sender, resolver));
                 }
             }, Config.TRANSFER_CHANNEL_NUMBERS);

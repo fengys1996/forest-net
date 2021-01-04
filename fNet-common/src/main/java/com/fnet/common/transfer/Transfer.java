@@ -15,5 +15,13 @@ public interface Transfer {
 
     void transferData(Message message);
 
+    default void transferDataNoFlush(Message message) {
+        throw new UnsupportedOperationException();
+    }
+
+    default void flush(int outChannelId) {
+        throw new UnsupportedOperationException();
+    }
+
     void free();
 }
