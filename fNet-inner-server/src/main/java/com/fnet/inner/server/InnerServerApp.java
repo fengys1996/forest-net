@@ -6,19 +6,24 @@ import com.fnet.common.config.Config;
 import com.fnet.common.config.cmd.CmdConfigService;
 import com.fnet.common.net.TcpServer;
 import com.fnet.common.service.Sender;
+import com.fnet.common.service.ThreadPoolUtil;
 import com.fnet.common.transfer.Resolver;
 import com.fnet.inner.server.handler.KeepAliveHandler;
 import com.fnet.inner.server.handler.MonitorOuterServerHandler;
 import com.fnet.inner.server.handler.RegisterHandler;
 import com.fnet.inner.server.messageResolver.ResolverContext;
 import com.fnet.inner.server.service.InnerSender;
+import com.fnet.inner.server.task.SendMessageToRealServerTask;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.apache.commons.cli.*;
 
+import java.util.concurrent.CompletableFuture;
+
 import static com.fnet.common.net.TcpServer.*;
+import static com.fnet.inner.server.messageResolver.TransferResolver.*;
 
 public class InnerServerApp {
 
@@ -27,6 +32,8 @@ public class InnerServerApp {
         new CmdConfigService().setInnerServerConfig(args);
 
         if (Config.isInnerServerConfigComplete()) {
+
+            CompletableFuture.runAsync(new SendMessageToRealServerTask(MESSAGE_QUEUE), ThreadPoolUtil.getCommonExecutor());
 
             Sender sender = InnerSender.getInstance();
             Resolver resolver = ResolverContext.getInstance();

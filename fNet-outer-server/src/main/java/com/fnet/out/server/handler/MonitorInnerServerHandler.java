@@ -15,7 +15,7 @@ import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.CompletableFuture;
 
 import static com.fnet.common.net.TcpServer.*;
 
@@ -32,7 +32,7 @@ public class MonitorInnerServerHandler extends AbstractMonitorHandler {
     public void doSomethingAfterAllTransferChannelActive() {
         if (!isMonitorBrower) {
             log.info("Start monitor browser!");
-            startMonitorBrowser();
+            startMonitorBrowserAsync();
             isMonitorBrower = true;
         }
     }
@@ -47,10 +47,8 @@ public class MonitorInnerServerHandler extends AbstractMonitorHandler {
         AuthService.getInstance().clearRegisterAuthInfo();
     }
 
-    private void startMonitorBrowser() {
-        ExecutorService commonExecutor;
-        commonExecutor = ThreadPoolUtil.getCommonExecutor();
-        commonExecutor.execute(() -> {
+    private void startMonitorBrowserAsync() {
+        CompletableFuture.runAsync(()-> {
             try {
                 new TcpServer().startMonitor(Config.OUTER_REMOTE_PORT, new ChannelInitializer<SocketChannel>() {
                     @Override
@@ -61,8 +59,9 @@ public class MonitorInnerServerHandler extends AbstractMonitorHandler {
                     }
                 }, MONITOR_BROWSER_BOSS_EVENTLOOP_GROUP, MONITOR_BROWSER_WORK_EVENTLOOP_GROUP);
             } catch (InterruptedException e) {
+                log.info("monitor browser failed!");
                 e.printStackTrace();
             }
-        });
+        }, ThreadPoolUtil.getCommonExecutor());
     }
 }

@@ -33,7 +33,7 @@ public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        InnerSender.getInstance().flush(ctx.channel().hashCode());
+        InnerSender.getInstance().flush(message.getOuterChannelId());
     }
 
     @Override
