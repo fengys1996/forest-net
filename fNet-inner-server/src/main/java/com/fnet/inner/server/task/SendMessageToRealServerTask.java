@@ -38,7 +38,7 @@ public class SendMessageToRealServerTask implements Runnable {
             Channel innerChannel;
 
             outerChannelId = message.getOuterChannelId();
-            innerChannel = Outer2InnerInfoService.getInstance().getInnerChannel(outerChannelId);
+            innerChannel = outer2InnerInfoService.getInnerChannel(outerChannelId);
 
             if (innerChannel != null) {
                 sender.sendBytesToRealServer(message);
@@ -46,7 +46,7 @@ public class SendMessageToRealServerTask implements Runnable {
                 new TcpServer(){
                     @Override
                     public void doSomeThingAfterConnectSuccess(Channel channel) {
-                        Outer2InnerInfoService.getInstance().addToMap(message.getOuterChannelId(), channel);
+                        outer2InnerInfoService.addToMap(message.getOuterChannelId(), channel);
                         sender.sendBytesToRealServer(channel, message);
                     }
                 }.startConnect1(Config.REAL_SERVER_ADDRESS, Config.REAL_SERVER_PORT, CONNECT_REAL_SERVER_EVENTLOOP_GROUP, new ChannelInitializer<SocketChannel>() {

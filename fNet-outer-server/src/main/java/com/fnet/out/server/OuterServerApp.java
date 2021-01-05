@@ -45,7 +45,7 @@ public class OuterServerApp {
             MonitorInnerServerHandler monitorInnerServerHandler;
             AuthHandler authHandler;
 
-            monitorInnerServerHandler = new MonitorInnerServerHandler(sender, messageResolver, authService);
+            monitorInnerServerHandler = new MonitorInnerServerHandler(sender, messageResolver, authService, outerChannelDataService);
             authHandler = new AuthHandler(sender, authService);
 
             new TcpServer().startMonitor(Config.OUTER_SERVER_PORT, new ChannelInitializer<SocketChannel>() {

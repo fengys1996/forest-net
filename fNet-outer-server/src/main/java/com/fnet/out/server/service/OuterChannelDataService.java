@@ -11,16 +11,6 @@ import java.util.Map;
 @Component
 public class OuterChannelDataService {
 
-    private static OuterChannelDataService outerChannelData = new OuterChannelDataService();
-
-    private OuterChannelDataService() {
-
-    }
-
-    public static OuterChannelDataService getInstance() {
-        return outerChannelData;
-    }
-
     private Map<Integer, Channel> objOuterChannelMap = new HashMap<Integer, Channel>();
 
     public Channel getOuterChannelById(@NonNull Integer outerChannelId) {

@@ -11,15 +11,17 @@ import lombok.extern.slf4j.Slf4j;
 public class MonitorBrowserHandler extends ChannelInboundHandlerAdapter {
 
     Sender sender;
+    OuterChannelDataService outerChannelDataService;
 
-    public MonitorBrowserHandler(Sender sender) {
+    public MonitorBrowserHandler(Sender sender, OuterChannelDataService outerChannelDataService) {
         this.sender = sender;
+        this.outerChannelDataService = outerChannelDataService;
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         log.info("A channel connect browser!");
-        OuterChannelDataService.getInstance().addToOuterChannelMap(ctx.channel());
+        outerChannelDataService.addToOuterChannelMap(ctx.channel());
     }
 
     @Override
@@ -42,6 +44,6 @@ public class MonitorBrowserHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         log.info("A channel disconnect browser!");
-        OuterChannelDataService.getInstance().removeOuterChannel(ctx.channel());
+        outerChannelDataService.removeOuterChannel(ctx.channel());
     }
 }

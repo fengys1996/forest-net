@@ -5,12 +5,22 @@ import com.fnet.common.service.AbstractSender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
 import io.netty.channel.Channel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class InnerSender extends AbstractSender {
+
+    @Autowired
+    Outer2InnerInfoService outer2InnerInfoService;
+
+    public InnerSender() {
+        if (Config.TRANSFER_CHANNEL_NUMBERS > 1)    transfer = MULTI_TRANSFER;
+    }
 
     @Override
     public void sendBytesToRealServer(Message message) {
-        Channel innerChannel = Outer2InnerInfoService.getInstance().getInnerChannel(message.getOuterChannelId());
+        Channel innerChannel = outer2InnerInfoService.getInnerChannel(message.getOuterChannelId());
         sendBytesToRealServer(innerChannel, message);
     }
 

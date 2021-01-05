@@ -10,16 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class Outer2InnerInfoService {
 
-    private static final Outer2InnerInfoService contactOfOuterToInnerChannel = new Outer2InnerInfoService();
-
-    private Outer2InnerInfoService() {
-
-    }
-
-    public static Outer2InnerInfoService getInstance() {
-        return contactOfOuterToInnerChannel;
-    }
-
     private Map<Integer, Channel> mapOfOuterToInnerChannel = new ConcurrentHashMap<>();
 
     public void addToMap(Integer outerChannelId, Channel innerChannel) {

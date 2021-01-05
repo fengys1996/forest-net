@@ -3,15 +3,11 @@ package com.fnet.out.server.handler;
 import com.fnet.common.config.Config;
 import com.fnet.common.handler.AbstractMonitorHandler;
 import com.fnet.common.net.TcpServer;
-import com.fnet.common.service.AbstractSender;
 import com.fnet.common.service.Sender;
 import com.fnet.common.service.ThreadPoolUtil;
-import com.fnet.common.transfer.AbatractTransfer;
 import com.fnet.common.transfer.protocol.MessageResolver;
 import com.fnet.out.server.service.AuthService;
 import com.fnet.out.server.service.OuterChannelDataService;
-import com.fnet.out.server.service.OuterSender;
-import com.sun.org.apache.xpath.internal.operations.Mult;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -30,10 +26,12 @@ public class MonitorInnerServerHandler extends AbstractMonitorHandler {
     private volatile boolean isMonitorBrower = false;
 
     AuthService authService;
+    OuterChannelDataService outerChannelDataService;
 
-    public MonitorInnerServerHandler(Sender sender, MessageResolver resolver, AuthService authService) {
+    public MonitorInnerServerHandler(Sender sender, MessageResolver resolver, AuthService authService, OuterChannelDataService outerChannelDataService) {
         super(sender, resolver);
         this.authService = authService;
+        this.outerChannelDataService = outerChannelDataService;
     }
 
     @Override
@@ -51,7 +49,7 @@ public class MonitorInnerServerHandler extends AbstractMonitorHandler {
     @Override
     public void doSomethingAfterAllTransferChannelInactive() {
         log.info("All transfer channel disconnect, start clean work!");
-        OuterChannelDataService.getInstance().clear();
+        outerChannelDataService.clear();
         authService.clearRegisterAuthInfo();
     }
 
@@ -63,7 +61,7 @@ public class MonitorInnerServerHandler extends AbstractMonitorHandler {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new ByteArrayEncoder(),
                                               new ByteArrayDecoder(),
-                                              new MonitorBrowserHandler(sender));
+                                              new MonitorBrowserHandler(sender, outerChannelDataService));
                     }
                 }, MONITOR_BROWSER_BOSS_EVENTLOOP_GROUP, MONITOR_BROWSER_WORK_EVENTLOOP_GROUP);
             } catch (InterruptedException e) {
