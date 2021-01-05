@@ -1,11 +1,9 @@
 package com.fnet.inner.server.handler;
 
-import com.fnet.common.config.Config;
-import com.fnet.common.transfer.Transfer;
+import com.fnet.common.service.AbstractSender;
+import com.fnet.common.service.Sender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
-import com.fnet.inner.server.service.InnerSender;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -15,12 +13,15 @@ import lombok.extern.slf4j.Slf4j;
 @Sharable
 public class RegisterHandler extends SimpleChannelInboundHandler<Message>{
 
+    Sender sender;
+
+    public RegisterHandler(Sender sender) {
+        this.sender = sender;
+    }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        Channel channel = ctx.channel();
-        if (channel != null && channel.isOpen()) {
-            channel.writeAndFlush(new Message(MessageType.REGISTER, 0, Config.PASSWORD.getBytes()));
-        }
+        sender.sendRegisterMessage(ctx.channel());
         super.channelActive(ctx);
     }
 
@@ -35,7 +36,7 @@ public class RegisterHandler extends SimpleChannelInboundHandler<Message>{
                         log.info("Inner server register success!");
                         return;
                     } else {
-                        InnerSender.getInstance().getTransfer().removeTransferChannel(ctx.channel());
+                        ((AbstractSender)sender).getTransfer().removeTransferChannel(ctx.channel());
                         log.info("Inner server register failed!");
                     }
                 }

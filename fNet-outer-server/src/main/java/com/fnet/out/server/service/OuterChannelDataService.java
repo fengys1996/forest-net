@@ -2,11 +2,13 @@ package com.fnet.out.server.service;
 
 import io.netty.channel.Channel;
 import lombok.NonNull;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+@Component
 public class OuterChannelDataService {
 
     private static OuterChannelDataService outerChannelData = new OuterChannelDataService();

@@ -1,20 +1,22 @@
 package com.fnet.inner.server.service;
 
 import io.netty.channel.Channel;
+import org.springframework.stereotype.Component;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ContactOfOuterToInnerChannel {
+@Component
+public class Outer2InnerInfoService {
 
-    private static final ContactOfOuterToInnerChannel contactOfOuterToInnerChannel = new ContactOfOuterToInnerChannel();
+    private static final Outer2InnerInfoService contactOfOuterToInnerChannel = new Outer2InnerInfoService();
 
-    private ContactOfOuterToInnerChannel() {
+    private Outer2InnerInfoService() {
 
     }
 
-    public static ContactOfOuterToInnerChannel getInstance() {
+    public static Outer2InnerInfoService getInstance() {
         return contactOfOuterToInnerChannel;
     }
 

@@ -1,15 +1,15 @@
 package com.fnet.out.server.messageResolver;
 
+import com.fnet.common.service.Sender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageResolver;
 import com.fnet.common.transfer.protocol.MessageType;
-import com.fnet.out.server.tool.CloseHelper;
 
-public class DisconnectResolver implements MessageResolver {
+class DisconnectResolver implements MessageResolver {
 
     @Override
-    public void resolve(Message message) {
-        CloseHelper.clearData();
+    public void resolve(Message message, Sender sender) {
+        // temporary do nothing
     }
 
     @Override

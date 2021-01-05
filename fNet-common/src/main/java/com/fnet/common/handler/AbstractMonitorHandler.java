@@ -3,9 +3,9 @@ package com.fnet.common.handler;
 import com.fnet.common.config.Config;
 import com.fnet.common.service.AbstractSender;
 import com.fnet.common.service.Sender;
-import com.fnet.common.transfer.Resolver;
 import com.fnet.common.transfer.Transfer;
 import com.fnet.common.transfer.protocol.Message;
+import com.fnet.common.transfer.protocol.MessageResolver;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -16,16 +16,16 @@ import java.io.IOException;
 @Slf4j
 public abstract class AbstractMonitorHandler extends ChannelInboundHandlerAdapter {
 
-    Sender sender;
-    Resolver resolver;
+    public Sender sender;
+    MessageResolver resolver;
 
-    public AbstractMonitorHandler(Sender sender, Resolver resolver) {
+    public AbstractMonitorHandler(Sender sender, MessageResolver resolver) {
         this.sender = sender;
         this.resolver = resolver;
     }
 
-    protected static int numsOfActiveChannel = 0;
-    protected static final Object LOCK = new Object();
+    protected int numsOfActiveChannel = 0;
+    protected final Object LOCK = new Object();
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -52,7 +52,7 @@ public abstract class AbstractMonitorHandler extends ChannelInboundHandlerAdapte
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        resolver.resolverMessage((Message) msg);
+        resolver.resolve((Message) msg, sender);
     }
 
     @Override
@@ -89,6 +89,4 @@ public abstract class AbstractMonitorHandler extends ChannelInboundHandlerAdapte
         }
         ctx.fireExceptionCaught(cause);
     }
-
-
 }

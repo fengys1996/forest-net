@@ -1,5 +1,6 @@
 package com.fnet.inner.server.messageResolver;
 
+import com.fnet.common.service.Sender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageResolver;
 import com.fnet.common.transfer.protocol.MessageType;
@@ -11,7 +12,7 @@ public class TransferResolver implements MessageResolver {
     public static LinkedBlockingQueue<Message> MESSAGE_QUEUE = new LinkedBlockingQueue<>(10000);
 
     @Override
-    public void resolve(Message message) throws InterruptedException {
+    public void resolve(Message message, Sender sender) throws InterruptedException {
         MESSAGE_QUEUE.put(message);
     }
 

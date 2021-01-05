@@ -6,7 +6,7 @@ import com.fnet.common.transfer.protocol.MessageResolver;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ResolverFactory {
+class ResolverFactory {
 
     private static ResolverFactory resolverFactory = new ResolverFactory();
     private static List<MessageResolver> resolvers = new ArrayList<>();

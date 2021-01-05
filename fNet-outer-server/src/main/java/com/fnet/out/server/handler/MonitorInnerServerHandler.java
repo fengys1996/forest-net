@@ -3,12 +3,16 @@ package com.fnet.out.server.handler;
 import com.fnet.common.config.Config;
 import com.fnet.common.handler.AbstractMonitorHandler;
 import com.fnet.common.net.TcpServer;
+import com.fnet.common.service.AbstractSender;
 import com.fnet.common.service.Sender;
 import com.fnet.common.service.ThreadPoolUtil;
-import com.fnet.common.transfer.Resolver;
+import com.fnet.common.transfer.AbatractTransfer;
+import com.fnet.common.transfer.protocol.MessageResolver;
 import com.fnet.out.server.service.AuthService;
 import com.fnet.out.server.service.OuterChannelDataService;
 import com.fnet.out.server.service.OuterSender;
+import com.sun.org.apache.xpath.internal.operations.Mult;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
@@ -20,12 +24,16 @@ import java.util.concurrent.CompletableFuture;
 import static com.fnet.common.net.TcpServer.*;
 
 @Slf4j
+@Sharable
 public class MonitorInnerServerHandler extends AbstractMonitorHandler {
 
-    private static volatile boolean isMonitorBrower = false;
+    private volatile boolean isMonitorBrower = false;
 
-    public MonitorInnerServerHandler(Sender sender, Resolver resolver) {
+    AuthService authService;
+
+    public MonitorInnerServerHandler(Sender sender, MessageResolver resolver, AuthService authService) {
         super(sender, resolver);
+        this.authService = authService;
     }
 
     @Override
@@ -44,7 +52,7 @@ public class MonitorInnerServerHandler extends AbstractMonitorHandler {
     public void doSomethingAfterAllTransferChannelInactive() {
         log.info("All transfer channel disconnect, start clean work!");
         OuterChannelDataService.getInstance().clear();
-        AuthService.getInstance().clearRegisterAuthInfo();
+        authService.clearRegisterAuthInfo();
     }
 
     private void startMonitorBrowserAsync() {
@@ -55,7 +63,7 @@ public class MonitorInnerServerHandler extends AbstractMonitorHandler {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new ByteArrayEncoder(),
                                               new ByteArrayDecoder(),
-                                              new MonitorBrowserHandler(OuterSender.getInstance()));
+                                              new MonitorBrowserHandler(sender));
                     }
                 }, MONITOR_BROWSER_BOSS_EVENTLOOP_GROUP, MONITOR_BROWSER_WORK_EVENTLOOP_GROUP);
             } catch (InterruptedException e) {

@@ -3,7 +3,8 @@ package com.fnet.inner.server.handler;
 import com.fnet.common.handler.AbstractMonitorHandler;
 import com.fnet.common.service.Sender;
 import com.fnet.common.service.ThreadPoolUtil;
-import com.fnet.common.transfer.Resolver;
+import com.fnet.common.transfer.protocol.MessageResolver;
+import io.netty.channel.ChannelHandler.Sharable;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ExecutorService;
@@ -11,9 +12,10 @@ import java.util.concurrent.ExecutorService;
 import static com.fnet.common.net.TcpServer.*;
 
 @Slf4j
+@Sharable
 public class MonitorOuterServerHandler extends AbstractMonitorHandler {
 
-    public MonitorOuterServerHandler(Sender sender, Resolver resolver) {
+    public MonitorOuterServerHandler(Sender sender, MessageResolver resolver) {
         super(sender, resolver);
     }
 

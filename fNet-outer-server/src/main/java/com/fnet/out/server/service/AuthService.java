@@ -4,28 +4,13 @@ import com.fnet.common.config.Config;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 
 @Slf4j
+@Component
 public class AuthService {
-
-    private static volatile AuthService authService;
-
-    private AuthService() {
-
-    }
-
-    public static AuthService getInstance() {
-        if (authService == null) {
-            synchronized (AuthService.class) {
-                if (authService == null) {
-                    authService = new AuthService();
-                }
-            }
-        }
-        return authService;
-    }
 
     private static String remoteIP;
     private static final Object REMOTE_IP_LOCK = new Object();

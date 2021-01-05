@@ -8,22 +8,9 @@ import io.netty.channel.Channel;
 
 public class InnerSender extends AbstractSender {
 
-    private static final InnerSender innerSender = new InnerSender();
-
-    private InnerSender(){
-
-    }
-
-    public static InnerSender getInstance() {
-        if (Config.TRANSFER_CHANNEL_NUMBERS > 1) {
-            innerSender.setMultiTransfer();
-        }
-        return innerSender;
-    }
-
     @Override
     public void sendBytesToRealServer(Message message) {
-        Channel innerChannel = ContactOfOuterToInnerChannel.getInstance().getInnerChannel(message.getOuterChannelId());
+        Channel innerChannel = Outer2InnerInfoService.getInstance().getInnerChannel(message.getOuterChannelId());
         sendBytesToRealServer(innerChannel, message);
     }
 
