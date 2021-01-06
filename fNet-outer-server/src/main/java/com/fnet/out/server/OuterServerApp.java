@@ -14,10 +14,16 @@ import com.fnet.out.server.service.AuthService;
 import com.fnet.out.server.service.OuterChannelDataService;
 import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
 import org.apache.commons.cli.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
+
+import javax.net.ssl.SSLException;
+import java.security.cert.CertificateException;
 
 import static com.fnet.common.net.TcpServer.*;
 
@@ -39,7 +45,7 @@ public class OuterServerApp {
     @Autowired
     AuthService authService;
 
-    public void start() throws ParseException, InterruptedException {
+    public void start() throws ParseException, InterruptedException, CertificateException, SSLException {
 
         if (Config.isOuterServerConfigComplete()) {
             MonitorInnerServerHandler monitorInnerServerHandler;
@@ -47,22 +53,29 @@ public class OuterServerApp {
 
             monitorInnerServerHandler = new MonitorInnerServerHandler(sender, messageResolver, authService, outerChannelDataService);
             authHandler = new AuthHandler(sender, authService);
+            SelfSignedCertificate selfSignedCertificate = new SelfSignedCertificate();
+            SslContext sslContext =
+                    SslContextBuilder.forServer(selfSignedCertificate.certificate(), selfSignedCertificate.privateKey())
+                                     .build();
+            System.out.println(selfSignedCertificate.certificate());
 
             new TcpServer().startMonitor(Config.OUTER_SERVER_PORT, new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {
                     ChannelPipeline pipeline = ch.pipeline();
+                    pipeline.addLast("idleCheckHandler", new OuterServerIdleCheckHandler());
+                    pipeline.addLast("sslHandler", sslContext.newHandler(ch.alloc()));
                     pipeline.addLast("messageEncoder", new MessageEncoder());
                     pipeline.addLast("messageDecoder", new MessageDecoder());
                     pipeline.addLast("authHandler", authHandler);
-                    pipeline.addLast("idleCheckHandler", new OuterServerIdleCheckHandler());
                     pipeline.addLast("monitorInnerServerHandler", monitorInnerServerHandler);
                 }
             }, MONITOR_INNER_SERVER_BOSS_EVENTLOOP_GROUP, MONITOR_INNER_SERVER_WORK_EVENTLOOP_GROUP);
         }
     }
 
-    public static void main(String[] args) throws InterruptedException, ParseException {
+    public static void main(String[] args)
+            throws InterruptedException, ParseException, CertificateException, SSLException {
 
         new CmdConfigService().setOuterServerConfig(args);
 
