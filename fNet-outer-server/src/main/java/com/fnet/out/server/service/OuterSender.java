@@ -5,9 +5,11 @@ import com.fnet.common.service.AbstractSender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
 import io.netty.channel.Channel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class OuterSender extends AbstractSender {
 
@@ -23,8 +25,10 @@ public class OuterSender extends AbstractSender {
         Channel outerChannel;
         outerChannel = outerChannelDataService.getOuterChannelById(message.getOuterChannelId());
 
-        if (outerChannel != null && outerChannel.isOpen()) {
+        if (outerChannel != null && outerChannel.isActive() && outerChannel.isWritable()) {
             outerChannel.writeAndFlush(message.getData());
+        } else {
+            log.info("channel is not writable, and discard some message!");
         }
     }
 
@@ -36,6 +40,11 @@ public class OuterSender extends AbstractSender {
         } else {
             message = new Message(MessageType.REGISTER_RESULT, 0, "false".getBytes());
         }
-        channel.writeAndFlush(message);
+        if (channel != null && channel.isActive() && channel.isWritable()) {
+            channel.writeAndFlush(message);
+        } else {
+            log.info("channel is not writable, and discard some message!");
+        }
+
     }
 }
