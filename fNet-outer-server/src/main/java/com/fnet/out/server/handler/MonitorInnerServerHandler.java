@@ -10,9 +10,12 @@ import com.fnet.out.server.service.AuthService;
 import com.fnet.out.server.service.OuterChannelDataService;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
+import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
@@ -59,9 +62,12 @@ public class MonitorInnerServerHandler extends AbstractMonitorHandler {
                 new TcpServer().startMonitor(Config.OUTER_REMOTE_PORT, new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new ByteArrayEncoder(),
-                                              new ByteArrayDecoder(),
-                                              new MonitorBrowserHandler(sender, outerChannelDataService));
+                        ChannelPipeline pipeline = ch.pipeline();
+                        if (Config.READ_LIMIT != 0 || Config.WRITE_LIMIT != 0) {
+                            pipeline.addLast(new GlobalTrafficShapingHandler(new NioEventLoopGroup(), Config.WRITE_LIMIT, Config.READ_LIMIT, 1000, 1000));
+                        }
+                        pipeline.addLast(new ByteArrayEncoder(), new ByteArrayDecoder(),
+                                new MonitorBrowserHandler(sender, outerChannelDataService));
                     }
                 }, MONITOR_BROWSER_BOSS_EVENTLOOP_GROUP, MONITOR_BROWSER_WORK_EVENTLOOP_GROUP);
             } catch (InterruptedException e) {

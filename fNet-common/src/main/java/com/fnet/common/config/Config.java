@@ -13,6 +13,8 @@ public class Config {
     public static final int DEFAULT_REAL_SERVER_PORT = 8080;
     public static final String DEFAULT_REAL_SERVER_ADDRESS = "127.0.0.1";
     public static final int DEFAULT_TRANSFER_CHANNEL_NUMBERS = 1;
+    public static final int DEFAULT_READ_LIMIT = 0;
+    public static final int DEFAULT_WRITE_LIMIT = 0;
 
     public static int OUTER_REMOTE_PORT;
     public static int OUTER_SERVER_PORT;
@@ -21,6 +23,8 @@ public class Config {
     public static int REAL_SERVER_PORT;
     public static String REAL_SERVER_ADDRESS;
     public static int TRANSFER_CHANNEL_NUMBERS;
+    public static int READ_LIMIT = 0;
+    public static int WRITE_LIMIT = 0;
 
     public static boolean isInnerServerConfigComplete() {
         return !StringUtil.isNullOrEmpty(Config.OUTER_SERVER_ADDRESS) && !StringUtil.isNullOrEmpty(Config.PASSWORD) && Config.OUTER_SERVER_PORT != 0

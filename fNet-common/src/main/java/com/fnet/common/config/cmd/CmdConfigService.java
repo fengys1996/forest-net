@@ -43,6 +43,9 @@ public class CmdConfigService implements ConfigService {
         options.addOption("port", true, "fNet Server port");
         options.addOption("password", true, "fNet Server password");
         options.addOption("remotePort", true, "Outer server port for monitor browser!");
+        options.addOption("nt", true, "The nums of tranfer channel");
+        options.addOption("wl", true, "write limit");
+        options.addOption("rl", true, "read limit");
 
         CommandLineParser parser = new DefaultParser();
         CommandLine commandLine = parser.parse(options, args);
@@ -55,6 +58,8 @@ public class CmdConfigService implements ConfigService {
             Config.PASSWORD = commandLine.getOptionValue("password", Config.DEFAULT_PASSWORD);
             Config.OUTER_REMOTE_PORT = Integer.parseInt(commandLine.getOptionValue("remotePort", String.valueOf(Config.DEFAULT_OUTER_REMOTE_PORT)));
             Config.TRANSFER_CHANNEL_NUMBERS = Integer.parseInt(commandLine.getOptionValue("nt", String.valueOf(Config.DEFAULT_TRANSFER_CHANNEL_NUMBERS)));
+            Config.WRITE_LIMIT = Integer.parseInt(commandLine.getOptionValue("wl", String.valueOf(Config.DEFAULT_WRITE_LIMIT)));
+            Config.READ_LIMIT = Integer.parseInt(commandLine.getOptionValue("rl", String.valueOf(Config.DEFAULT_READ_LIMIT)));
         }
     }
 }
