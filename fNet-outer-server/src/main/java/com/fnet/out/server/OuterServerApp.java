@@ -53,6 +53,7 @@ public class OuterServerApp {
 
             monitorInnerServerHandler = new MonitorInnerServerHandler(sender, messageResolver, authService, outerChannelDataService);
             authHandler = new AuthHandler(sender, authService);
+            // Formal environments require trusted certificates, not selfSignedCertificate!!!
             SelfSignedCertificate selfSignedCertificate = new SelfSignedCertificate();
             SslContext sslContext =
                     SslContextBuilder.forServer(selfSignedCertificate.certificate(), selfSignedCertificate.privateKey())

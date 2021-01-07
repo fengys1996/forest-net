@@ -18,6 +18,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.apache.commons.cli.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,8 @@ public class InnerServerApp {
             registerHandler = new RegisterHandler(sender);
             keepAliveHandler = new KeepAliveHandler(sender);
             monitorOuterServerHandler = new MonitorOuterServerHandler(sender, resolver);
-            sslContextBuilder = SslContextBuilder.forClient();
+            sslContextBuilder = SslContextBuilder.forClient()
+                                                 .trustManager(InsecureTrustManagerFactory.INSTANCE); // The formal environment needs to delete this line of code!!!
             sslContext = sslContextBuilder.build();
 
             // create a channel to register, when register success, then create other channels
