@@ -1,19 +1,20 @@
 package com.fnet.out.server.handler;
 
 
+import com.fnet.out.server.domainCenter.DomainDataService;
+import com.fnet.out.server.sender.TransferCache;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.TooLongFrameException;
 import io.netty.handler.codec.http.HttpConstants;
 import io.netty.util.ByteProcessor;
 import io.netty.util.internal.AppendableCharSequence;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-
 @Slf4j
-public class CheckHostHandler extends ByteToMessageDecoder {
+public class CheckHostHandler extends ChannelInboundHandlerAdapter {
 
     public static final int DEFAULT_MAX_INITIAL_LINE_LENGTH = 4096;
     public static final int DEFAULT_MAX_HEADER_SIZE = 8192;
@@ -29,22 +30,26 @@ public class CheckHostHandler extends ByteToMessageDecoder {
 
     public static final String HOST_HEADER_NAME = "Host";
 
-    public CheckHostHandler() {
+    DomainDataService domainDataService;
+
+    public CheckHostHandler(DomainDataService domainDataService) {
         this.appendableCharSequence = new AppendableCharSequence(DEFAULT_INITIAL_BUFFER_SIZE);
         this.lineParser = new LineParser(appendableCharSequence, DEFAULT_MAX_INITIAL_LINE_LENGTH);
         this.headerParser = new HeaderParser(appendableCharSequence, DEFAULT_MAX_HEADER_SIZE);
+        this.domainDataService = domainDataService;
     }
 
-    public CheckHostHandler(int initialBufferSize, int maxInitialLineLength, int maxHeaderSize) {
+    public CheckHostHandler(int initialBufferSize, int maxInitialLineLength, int maxHeaderSize, DomainDataService domainDataService) {
         appendableCharSequence = new AppendableCharSequence(initialBufferSize);
         lineParser = new LineParser(appendableCharSequence, maxInitialLineLength);
         headerParser = new HeaderParser(appendableCharSequence, maxHeaderSize);
+        this.domainDataService = domainDataService;
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
-        ByteBuf buf = buffer.slice();
-        buf.retain();
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        ByteBuf buffer = (ByteBuf) msg;
+        ByteBuf slice = buffer.slice();
         switch (currentState) {
         case SKIP_CONTROL_CHARS:
             // Fall-through
@@ -67,14 +72,24 @@ public class CheckHostHandler extends ByteToMessageDecoder {
         }
         case READ_HEADER:
             CharSequence host = findHost(buffer);
-            if (host != null) {
-                // TODO: save to cache
-                out.add(buf);
-                ctx.pipeline().remove(this);
-            } else {
-                ctx.channel().close();
+            if (host != null && doSomethingAfterFindHost((String) host, slice, ctx)) {
+                return;
             }
+            // fall-through
+        default:
+            ctx.channel().close();
         }
+    }
+
+    private boolean doSomethingAfterFindHost(String host, ByteBuf slice , ChannelHandlerContext ctx) throws Exception {
+        Channel transferChannel = domainDataService.getTransferChannelByDomainName(host);
+        if (transferChannel != null) {
+            TransferCache.addOuterChannel(ctx.channel() , transferChannel);
+            ctx.pipeline().remove(this);
+            super.channelRead(ctx, slice);
+            return true;
+        }
+        return false;
     }
 
     private enum State {

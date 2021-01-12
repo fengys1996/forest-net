@@ -6,12 +6,14 @@ import com.fnet.common.config.Config;
 import com.fnet.common.config.cmd.CmdConfigService;
 import com.fnet.common.net.TcpServer;
 import com.fnet.common.service.Sender;
+import com.fnet.common.service.ThreadPoolUtil;
 import com.fnet.common.transfer.protocol.MessageResolver;
+import com.fnet.out.server.domainCenter.DomainDataService;
 import com.fnet.out.server.handler.AuthHandler;
 import com.fnet.out.server.handler.MonitorInnerServerHandler;
 import com.fnet.out.server.handler.OuterServerIdleCheckHandler;
-import com.fnet.out.server.service.AuthService;
-import com.fnet.out.server.service.OuterChannelDataService;
+import com.fnet.out.server.authCenter.AuthService;
+import com.fnet.out.server.task.MonitorBrowserTask;
 import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.SslContext;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import javax.net.ssl.SSLException;
 import java.security.cert.CertificateException;
+import java.util.concurrent.CompletableFuture;
 
 import static com.fnet.common.net.TcpServer.*;
 
@@ -40,10 +43,10 @@ public class OuterServerApp {
     MessageResolver messageResolver;
 
     @Autowired
-    OuterChannelDataService outerChannelDataService;
+    AuthService authService;
 
     @Autowired
-    AuthService authService;
+    DomainDataService domainDataService;
 
     public void start() throws ParseException, InterruptedException, CertificateException, SSLException {
 
@@ -51,14 +54,17 @@ public class OuterServerApp {
             MonitorInnerServerHandler monitorInnerServerHandler;
             AuthHandler authHandler;
 
-            monitorInnerServerHandler = new MonitorInnerServerHandler(sender, messageResolver, authService, outerChannelDataService);
-            authHandler = new AuthHandler(sender, authService);
+            monitorInnerServerHandler = new MonitorInnerServerHandler(sender, messageResolver, authService, domainDataService);
+            authHandler = new AuthHandler(sender, authService, domainDataService);
             // Formal environments require trusted certificates, not selfSignedCertificate!!!
             SelfSignedCertificate selfSignedCertificate = new SelfSignedCertificate();
             SslContext sslContext =
                     SslContextBuilder.forServer(selfSignedCertificate.certificate(), selfSignedCertificate.privateKey())
                                      .build();
             System.out.println(selfSignedCertificate.certificate());
+
+            CompletableFuture.runAsync(new MonitorBrowserTask(sender, domainDataService),
+                                       ThreadPoolUtil.getCommonExecutor());
 
             new TcpServer().startMonitor(Config.OUTER_SERVER_PORT, new ChannelInitializer<SocketChannel>() {
                 @Override

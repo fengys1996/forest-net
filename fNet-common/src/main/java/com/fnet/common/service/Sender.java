@@ -37,6 +37,10 @@ public interface Sender {
         throw new UnsupportedOperationException();
     }
 
+    default void sendMessageToTransferChannelNoFlush(Message message) {
+        throw new UnsupportedOperationException();
+    }
+
     default void flush(int outChannelId) {
         throw new UnsupportedOperationException();
     }
