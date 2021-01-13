@@ -10,22 +10,22 @@ import java.net.UnknownHostException;
 public interface DomainDataService {
 
     /**
-     * ³õÊ¼»¯DomainÊı¾İ
+     * åˆå§‹åŒ–Domainæ•°æ®
      */
     void initData() throws Exception;
 
     /**
-     * °ä·¢Ò»¸öÓòÃû
+     * é¢å‘ä¸€ä¸ªåŸŸå
      */
     DomainInfo issueDomain();
 
     /**
-     * »ØÊÕÒ»¸öÓòÃû
+     * å›æ”¶ä¸€ä¸ªåŸŸå
      */
     void recoveryDomainByTransferChannel(Channel channel);
 
     /**
-     * ¸ù¾İÓòÃû»ñÈ¡transfer channel
+     * æ ¹æ®åŸŸåè·å–transfer channel
      */
     Channel getTransferChannelByDomainName(String domainName);
 }

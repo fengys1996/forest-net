@@ -51,8 +51,8 @@ public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {
         if (cause instanceof IOException) {
-            if ("Ô¶³ÌÖ÷»úÇ¿ÆÈ¹Ø±ÕÁËÒ»¸öÏÖÓĞµÄÁ¬½Ó¡£".equals(cause.getMessage())) {
-                log.info("Ô¶³ÌÖ÷»úÇ¿ÆÈ¹Ø±ÕÁËÒ»¸öÏÖÓĞµÄÁ¬½Ó¡£");
+            if ("è¿œç¨‹ä¸»æœºå¼ºè¿«å…³é—­äº†ä¸€ä¸ªç°æœ‰çš„è¿æ¥ã€‚".equals(cause.getMessage())) {
+                log.info("è¿œç¨‹ä¸»æœºå¼ºè¿«å…³é—­äº†ä¸€ä¸ªç°æœ‰çš„è¿æ¥ã€‚");
                 return;
             }
         }
