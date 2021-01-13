@@ -6,49 +6,48 @@ public enum MessageType {
      * authentication and start monitor browser
      * direction: inner server -> outer server
      */
-    REGISTER(1),
+    REGISTER((byte)1),
 
     /**
      * the result of authentication and register
      * direction: outer server -> inner server
      */
-    REGISTER_RESULT(2),
-
+    REGISTER_RESULT((byte)2),
 
     /**
      * transfer data
      * direction: outer server <-> inner server
      */
-    TRANSFER_DATA(3),
+    TRANSFER_DATA((byte)3),
 
     /**
      * disconnect
      * direction: outer server <-> inner server
      */
-    DISCONNECT(4),
+    DISCONNECT((byte)4),
 
     /**
      * heart beat
      * direction: outer server <-> inner server
      */
-    HEART_BEAT(5);
+    HEART_BEAT((byte)5);
 
-    private int code;
+    private final byte code;
 
-    MessageType(int code) {
+    MessageType(byte code) {
         this.code = code;
     }
 
-    public int getCode() {
+    public byte getCode() {
         return code;
     }
 
-    public static MessageType valueOf(int code) {
-        for (MessageType item : MessageType.values()) {
+    public static MessageType valueOf(byte code) {
+        for (MessageType item : values()) {
             if (item.code == code) {
                 return item;
             }
         }
-        throw new RuntimeException("NatxMessageType code error: " + code);
+        throw new RuntimeException("MessageType code error: " + code);
     }
 }
