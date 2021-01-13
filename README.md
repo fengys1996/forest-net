@@ -2,14 +2,16 @@
 Intranet penetration tool（内网穿透工具）
 
 ###  ForestNet能干什么
-1. 当你需要在本地调试需要回调的程序，比如微信接口本地开发等等。**Choose it！**
-2. 当你想要暴露自己本地服务到公网上时，**Choose it！**
-3. 当你想学习Netty时，苦于没有上手项目，**Choose it！**
-4. 当你想调试复杂的多线程项目，**Choose it！**
+- 当你需要在本地调试需要回调的程序，比如微信接口本地开发等等。**Choose it！**
+- 当你想要暴露自己本地服务到公网上时，**Choose it！**
+- 当你想学习Netty时，苦于没有上手项目，**Choose it！**
+- 当你想调试复杂的多线程项目，**Choose it！**
 
 ### ForestNet特性
 - 基于JDK8 + Netty + Spring构建。
 - 一共分为两个版本，单服务器多客户端版本，集群版本（集群版本还在构思中）。
+- 支持SSL/TLS传输。
+- 支持outer server整体流量控制。
 
 ### 架构图
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210113185821299.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MjU1Nzcy,size_16,color_FFFFFF,t_70)
