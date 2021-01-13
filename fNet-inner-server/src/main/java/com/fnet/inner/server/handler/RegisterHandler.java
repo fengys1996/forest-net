@@ -32,12 +32,11 @@ public class RegisterHandler extends SimpleChannelInboundHandler<Message>{
                 byte[] data = msg.getData();
                 if (data != null) {
                     String result = new String(data);
-                    if ("true".equals(result)) {
-                        log.info("Inner server register success!");
-                        return;
-                    } else {
+                    if ("false".equals(result)) {
                         ((AbstractSender)sender).getTransfer().removeTransferChannel(ctx.channel());
                         log.info("Inner server register failed!");
+                    } else {
+                        log.info("Inner server register success!Domain name = [" + result + "]");
                     }
                 }
             }

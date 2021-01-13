@@ -51,8 +51,8 @@ public class DefaultSenderImpl implements Sender {
     byte[] falseBytes = "false".getBytes();
 
     @Override
-    public void sendRegisterResponseMessage(boolean isSuccess, Channel channel) {
-        registerMessage.setData(isSuccess ? trueBytes : falseBytes);
+    public void sendRegisterResponseMessage(boolean isSuccess, byte[] data, Channel channel) {
+        registerMessage.setData(isSuccess ? data : falseBytes);
         registerMessage.setType(MessageType.REGISTER_RESULT);
         if (SenderTool.checkChannel(channel)) {
             channel.writeAndFlush(registerMessage);
@@ -70,7 +70,7 @@ public class DefaultSenderImpl implements Sender {
         Channel transferChannel =
                 outerChannel2TransferChannelReleatedCache.get(outerChannelId);
 
-        if (transferChannel != null && transferChannel.isActive() && transferChannel.isWritable()) {
+        if (SenderTool.checkChannel(transferChannel)) {
             transferChannel.write(message);
         }
     }

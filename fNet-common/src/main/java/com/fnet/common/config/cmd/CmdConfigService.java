@@ -51,6 +51,7 @@ public class CmdConfigService implements ConfigService {
         // options.addOption("nt", true, "The nums of transfer channel");
         options.addOption("wl", true, "write limit");
         options.addOption("rl", true, "read limit");
+        options.addOption("dnl", true, "domain name list");
 
         CommandLineParser parser = new DefaultParser();
         CommandLine commandLine = parser.parse(options, args);
@@ -66,6 +67,7 @@ public class CmdConfigService implements ConfigService {
             Config.TRANSFER_CHANNEL_NUMBERS = DEFAULT_TRANSFER_CHANNEL_NUMBERS;
             Config.WRITE_LIMIT = Integer.parseInt(commandLine.getOptionValue("wl", String.valueOf(Config.DEFAULT_WRITE_LIMIT)));
             Config.READ_LIMIT = Integer.parseInt(commandLine.getOptionValue("rl", String.valueOf(Config.DEFAULT_READ_LIMIT)));
+            Config.DOMAIN_NAME_LIST = commandLine.getOptionValue("dnl", DEFAULT_DOMAIN_NAME_LIST);
         }
     }
 }

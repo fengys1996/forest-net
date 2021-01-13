@@ -36,12 +36,13 @@ public class AuthHandler extends SimpleChannelInboundHandler<Message> {
 
             if (socketAddress instanceof InetSocketAddress) {
                 InetSocketAddress remoteAddress = (InetSocketAddress)socketAddress;
+                DomainInfo domainInfo = null;
                 boolean isRegisterSuccess =
-                        authService.registerAuth(msg, remoteAddress) && issueAndSetupDomain(remoteAddress, channel);
+                        authService.registerAuth(msg, remoteAddress) && (domainInfo = issueAndSetupDomain(remoteAddress, channel)) != null;
                 if (isRegisterSuccess) {
-                    sender.sendRegisterResponseMessage(true, channel);
+                    sender.sendRegisterResponseMessage(true, domainInfo.getDomainName().getBytes() , channel);
                 } else {
-                    sender.sendRegisterResponseMessage(false, channel);
+                    sender.sendRegisterResponseMessage(false, null, channel);
                     channel.close();
                 }
             }
@@ -51,13 +52,13 @@ public class AuthHandler extends SimpleChannelInboundHandler<Message> {
         }
     }
 
-    private boolean issueAndSetupDomain(InetSocketAddress remoteAddress, Channel transferChannel) {
+    private DomainInfo issueAndSetupDomain(InetSocketAddress remoteAddress, Channel transferChannel) {
         DomainInfo domainInfo = domainDataService.issueDomain();
-        if (domainInfo == null)     return false;
+        if (domainInfo == null)     return null;
         domainInfo.setAvailable(false);
         domainInfo.setBindClient(true);
         domainInfo.setBindClientIp(remoteAddress.getAddress().getHostAddress());
         domainInfo.setTransferChannel(transferChannel);
-        return true;
+        return domainInfo;
     }
 }

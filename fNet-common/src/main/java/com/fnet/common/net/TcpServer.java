@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 
+import static io.netty.channel.ChannelOption.*;
+
 @Slf4j
 public class TcpServer {
 
@@ -30,6 +32,10 @@ public class TcpServer {
     public static EventLoopGroup MONITOR_INNER_SERVER_BOSS_EVENTLOOP_GROUP = new NioEventLoopGroup(1, new DefaultThreadFactory("monitor_inner_server_boss_eventloop_group"));
     public static EventLoopGroup MONITOR_INNER_SERVER_WORK_EVENTLOOP_GROUP = new NioEventLoopGroup(8, new DefaultThreadFactory("monitor_inner_server_worker_eventloop_group"));
 
+    private static final WriteBufferWaterMark
+            WRITE_BUFFER_WATER_MARK_OF_OUTER_SERVER = new WriteBufferWaterMark(2 * 1024 * 1024, 4 * 1024 * 1024);
+    private static final WriteBufferWaterMark
+            WRITE_BUFFER_WATER_MARK_OF_INNER_SERVER = new WriteBufferWaterMark(2 * 1024 * 1024, 4 * 1024 * 1024);
 
 
     public void startMonitor(int port, ChannelInitializer<SocketChannel> channelInitializer, EventLoopGroup bossGroup, EventLoopGroup workGroup) throws InterruptedException {
@@ -39,6 +45,7 @@ public class TcpServer {
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
+                    .childOption(WRITE_BUFFER_WATER_MARK, WRITE_BUFFER_WATER_MARK_OF_OUTER_SERVER)
                     .localAddress(new InetSocketAddress(port))
                     .childHandler(channelInitializer);
             ChannelFuture channelFuture = bootstrap.bind().sync();
@@ -55,6 +62,7 @@ public class TcpServer {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
                  .channel(NioSocketChannel.class)
+                 .option(WRITE_BUFFER_WATER_MARK, WRITE_BUFFER_WATER_MARK_OF_INNER_SERVER)
                  .option(ChannelOption.TCP_NODELAY, true)
                  .handler(channelInitializer);
         for (int i = 0; i < tcpNumber; i++) {

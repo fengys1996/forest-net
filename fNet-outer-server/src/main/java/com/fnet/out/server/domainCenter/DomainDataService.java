@@ -2,6 +2,8 @@ package com.fnet.out.server.domainCenter;
 
 import io.netty.channel.Channel;
 
+import java.net.UnknownHostException;
+
 /**
  * @author fys
  */
@@ -10,7 +12,7 @@ public interface DomainDataService {
     /**
      * 初始化Domain数据
      */
-    void initData();
+    void initData() throws Exception;
 
     /**
      * 颁发一个域名

@@ -1,9 +1,13 @@
 package com.fnet.out.server.domainCenter;
 
+import com.fnet.common.config.Config;
 import io.netty.channel.Channel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,6 +15,7 @@ import java.util.Map.Entry;
 /**
  * @author fys
  */
+@Slf4j
 @Component
 public class DefaultDomainDataServiceImpl implements DomainDataService {
 
@@ -21,13 +26,15 @@ public class DefaultDomainDataServiceImpl implements DomainDataService {
 
     @PostConstruct
     @Override
-    public void initData() {
-        // use to local test
-        // TODO: 域名信息初始化可以从配置文件获取
-        String domainName = "localhost:8081";
-        String domainName1 = "192.168.2.109:8081";
-        data.put(domainName, new DomainInfo(domainName, "127.0.0.1"));
-        data.put(domainName1, new DomainInfo(domainName1, "127.0.0.1"));
+    public void initData() throws UnknownHostException {
+        InetAddress localHost = InetAddress.getLocalHost();
+        String hostAddress = localHost.getHostAddress();
+
+        String domainNameData = Config.DOMAIN_NAME_LIST;
+        String[] domainNameList = domainNameData.split("\\*");
+        for (String domainName : domainNameList) {
+            data.put(domainName, new DomainInfo(domainName, hostAddress));
+        }
     }
 
     @Override
@@ -36,6 +43,7 @@ public class DefaultDomainDataServiceImpl implements DomainDataService {
             DomainInfo domainInfo
                     = domainInfoEntry.getValue();
             if (domainInfo.isAvailable() && !domainInfo.isBindClient()) {
+                log.info("issue: {}", domainInfo.getDomainName());
                 domainInfo.setAvailable(false);
                 return domainInfo;
             }

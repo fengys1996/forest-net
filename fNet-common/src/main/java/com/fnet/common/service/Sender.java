@@ -33,7 +33,7 @@ public interface Sender {
         throw new UnsupportedOperationException();
     }
 
-    default void sendRegisterResponseMessage(boolean isSuccess, Channel channel) {
+    default void sendRegisterResponseMessage(boolean isSuccess, byte[] data, Channel channel) {
         throw new UnsupportedOperationException();
     }
 
