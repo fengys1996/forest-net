@@ -6,7 +6,7 @@ import com.fnet.common.service.Sender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.inner.server.handler.MonitorRealServerHandler;
 import com.fnet.inner.server.messageResolver.TransferResolver;
-import com.fnet.inner.server.service.Outer2InnerInfoService;
+import com.fnet.inner.server.sender.TransferCache;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -22,11 +22,9 @@ public class SendMessageToRealServerTask implements Runnable {
 
     LinkedBlockingQueue<Message> messageQueue = TransferResolver.MESSAGE_QUEUE;
     Sender sender;
-    Outer2InnerInfoService outer2InnerInfoService;
 
-    public SendMessageToRealServerTask(Sender sender, Outer2InnerInfoService outer2InnerInfoService) {
+    public SendMessageToRealServerTask(Sender sender) {
         this.sender = sender;
-        this.outer2InnerInfoService = outer2InnerInfoService;
     }
 
     @SneakyThrows
@@ -38,7 +36,7 @@ public class SendMessageToRealServerTask implements Runnable {
             Channel innerChannel;
 
             outerChannelId = message.getOuterChannelId();
-            innerChannel = outer2InnerInfoService.getInnerChannel(outerChannelId);
+            innerChannel = TransferCache.getInnerChannel(outerChannelId);
 
             if (innerChannel != null) {
                 sender.sendBytesToRealServer(message);
@@ -46,7 +44,7 @@ public class SendMessageToRealServerTask implements Runnable {
                 new TcpServer(){
                     @Override
                     public void doSomeThingAfterConnectSuccess(Channel channel) {
-                        outer2InnerInfoService.addToMap(message.getOuterChannelId(), channel);
+                        TransferCache.addToMap(message.getOuterChannelId(), channel);
                         sender.sendBytesToRealServer(channel, message);
                     }
                 }.startConnect1(Config.REAL_SERVER_ADDRESS, Config.REAL_SERVER_PORT, CONNECT_REAL_SERVER_EVENTLOOP_GROUP, new ChannelInitializer<SocketChannel>() {
@@ -54,7 +52,7 @@ public class SendMessageToRealServerTask implements Runnable {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new ByteArrayDecoder(),
                                               new ByteArrayEncoder(),
-                                              new MonitorRealServerHandler(message, sender, outer2InnerInfoService));
+                                              new MonitorRealServerHandler(message, sender));
                     }
                 }, 1);
             }

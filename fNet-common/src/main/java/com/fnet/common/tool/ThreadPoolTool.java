@@ -1,4 +1,4 @@
-package com.fnet.common.service;
+package com.fnet.common.tool;
 
 import io.netty.util.NettyRuntime;
 import io.netty.util.concurrent.DefaultThreadFactory;
@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class ThreadPoolUtil {
+public class ThreadPoolTool {
 
     private static class NewThreadPolicy implements RejectedExecutionHandler {
 

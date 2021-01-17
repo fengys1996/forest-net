@@ -1,6 +1,7 @@
 package com.fnet.out.server.sender;
 
 import com.fnet.common.service.Sender;
+import com.fnet.common.tool.ObjectTool;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
 import io.netty.channel.Channel;
@@ -12,7 +13,7 @@ import static com.fnet.out.server.sender.TransferCache.*;
  * @author fys
  */
 @Component
-public class DefaultSenderImpl implements Sender {
+public class DefaultOuterSenderImpl implements Sender {
 
     @Override
     public void sendMessageToTransferChannel(Message message) {
@@ -23,11 +24,11 @@ public class DefaultSenderImpl implements Sender {
             return;
         }
 
-        Channel tranferChannel =
+        Channel transferChannel =
                 outerChannel2TransferChannelReleatedCache.get(message.getOuterChannelId());
 
-        if (SenderTool.checkChannel(tranferChannel)) {
-            tranferChannel.writeAndFlush(message);
+        if (ObjectTool.checkChannel(transferChannel)) {
+            transferChannel.writeAndFlush(message);
         }
     }
 
@@ -41,7 +42,7 @@ public class DefaultSenderImpl implements Sender {
 
         Channel outerChannel = outerChannelMap.get(outerChannelId);
 
-        if (SenderTool.checkChannel(outerChannel)) {
+        if (ObjectTool.checkChannel(outerChannel)) {
             outerChannel.writeAndFlush(message.getData());
         }
     }
@@ -54,7 +55,7 @@ public class DefaultSenderImpl implements Sender {
     public void sendRegisterResponseMessage(boolean isSuccess, byte[] data, Channel channel) {
         registerMessage.setData(isSuccess ? data : falseBytes);
         registerMessage.setType(MessageType.REGISTER_RESULT);
-        if (SenderTool.checkChannel(channel)) {
+        if (ObjectTool.checkChannel(channel)) {
             channel.writeAndFlush(registerMessage);
         }
     }
@@ -70,7 +71,7 @@ public class DefaultSenderImpl implements Sender {
         Channel transferChannel =
                 outerChannel2TransferChannelReleatedCache.get(outerChannelId);
 
-        if (SenderTool.checkChannel(transferChannel)) {
+        if (ObjectTool.checkChannel(transferChannel)) {
             transferChannel.write(message);
         }
     }
@@ -84,7 +85,7 @@ public class DefaultSenderImpl implements Sender {
         Channel tranferChannel =
                 outerChannel2TransferChannelReleatedCache.get(outerChannelId);
 
-        if (SenderTool.checkChannel(tranferChannel)) {
+        if (ObjectTool.checkChannel(tranferChannel)) {
             tranferChannel.flush();
         }
     }

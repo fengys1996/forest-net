@@ -6,12 +6,11 @@ import com.fnet.common.config.Config;
 import com.fnet.common.config.cmd.CmdConfigService;
 import com.fnet.common.net.TcpServer;
 import com.fnet.common.service.Sender;
-import com.fnet.common.service.ThreadPoolUtil;
+import com.fnet.common.tool.ThreadPoolTool;
 import com.fnet.common.transfer.protocol.MessageResolver;
 import com.fnet.inner.server.handler.KeepAliveHandler;
 import com.fnet.inner.server.handler.MonitorOuterServerHandler;
 import com.fnet.inner.server.handler.RegisterHandler;
-import com.fnet.inner.server.service.Outer2InnerInfoService;
 import com.fnet.inner.server.task.SendMessageToRealServerTask;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -39,14 +38,11 @@ public class InnerServerApp {
     @Autowired
     MessageResolver resolver;
 
-    @Autowired
-    Outer2InnerInfoService outer2InnerInfoService;
-
     public void start() throws ParseException, InterruptedException, SSLException {
 
         if (Config.isInnerServerConfigComplete()) {
 
-            CompletableFuture.runAsync(new SendMessageToRealServerTask(sender, outer2InnerInfoService), ThreadPoolUtil.getCommonExecutor());
+            CompletableFuture.runAsync(new SendMessageToRealServerTask(sender), ThreadPoolTool.getCommonExecutor());
 
             RegisterHandler registerHandler;
             KeepAliveHandler keepAliveHandler;

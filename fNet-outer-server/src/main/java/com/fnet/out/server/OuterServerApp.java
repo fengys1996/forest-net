@@ -6,7 +6,7 @@ import com.fnet.common.config.Config;
 import com.fnet.common.config.cmd.CmdConfigService;
 import com.fnet.common.net.TcpServer;
 import com.fnet.common.service.Sender;
-import com.fnet.common.service.ThreadPoolUtil;
+import com.fnet.common.tool.ThreadPoolTool;
 import com.fnet.common.transfer.protocol.MessageResolver;
 import com.fnet.out.server.domainCenter.DomainDataService;
 import com.fnet.out.server.handler.AuthHandler;
@@ -64,7 +64,7 @@ public class OuterServerApp {
             System.out.println(selfSignedCertificate.certificate());
 
             CompletableFuture.runAsync(new MonitorBrowserTask(sender, domainDataService),
-                                       ThreadPoolUtil.getCommonExecutor());
+                                       ThreadPoolTool.getCommonExecutor());
 
             new TcpServer().startMonitor(Config.OUTER_SERVER_PORT, new ChannelInitializer<SocketChannel>() {
                 @Override

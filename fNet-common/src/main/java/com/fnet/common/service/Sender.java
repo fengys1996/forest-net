@@ -11,6 +11,14 @@ public interface Sender {
         throw new UnsupportedOperationException();
     }
 
+    default void sendMessageToTransferChannelNoFlush(Message message) {
+        throw new UnsupportedOperationException();
+    }
+
+    default void flush(int outChannelId) {
+        throw new UnsupportedOperationException();
+    }
+
     // inner server
     default void sendBytesToRealServer(Message message) {
         throw new UnsupportedOperationException();
@@ -34,14 +42,6 @@ public interface Sender {
     }
 
     default void sendRegisterResponseMessage(boolean isSuccess, byte[] data, Channel channel) {
-        throw new UnsupportedOperationException();
-    }
-
-    default void sendMessageToTransferChannelNoFlush(Message message) {
-        throw new UnsupportedOperationException();
-    }
-
-    default void flush(int outChannelId) {
         throw new UnsupportedOperationException();
     }
 }

@@ -1,9 +1,9 @@
 package com.fnet.inner.server.handler;
 
-import com.fnet.common.service.AbstractSender;
 import com.fnet.common.service.Sender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
+import com.fnet.inner.server.sender.TransferCache;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -33,7 +33,7 @@ public class RegisterHandler extends SimpleChannelInboundHandler<Message>{
                 if (data != null) {
                     String result = new String(data);
                     if ("false".equals(result)) {
-                        ((AbstractSender)sender).getTransfer().removeTransferChannel(ctx.channel());
+                        TransferCache.removeTransferChannel();
                         log.info("Inner server register failed!");
                     } else {
                         log.info("Inner server register success!Domain name = [" + result + "]");
