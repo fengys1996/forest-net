@@ -13,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ExecutorService;
 
-import static com.fnet.common.net.TcpServer.*;
-
 @Slf4j
 @Sharable
 public class MonitorOuterServerHandler extends ChannelInboundHandlerAdapter {
@@ -45,19 +43,9 @@ public class MonitorOuterServerHandler extends ChannelInboundHandlerAdapter {
         TransferCache.removeTransferChannel();
         Channel channel = ctx.channel();
         channel.close();
-        doSomethingAfterAllTransferChannelInactive();
-    }
 
-    private void doSomethingAfterAllTransferChannelInactive() {
-        // close inner server
-        if (!CONNECT_REAL_SERVER_EVENTLOOP_GROUP.isShutdown() && !CONNECT_REAL_SERVER_EVENTLOOP_GROUP.isShuttingDown()) {
-            log.info("There are no TransferChannel available, so close connect real server eventloop group!");
-            CONNECT_REAL_SERVER_EVENTLOOP_GROUP.shutdownGracefully();
-        }
-        if (!CONNECT_OUTER_SERVER_EVENTLOOP_GROUP.isShutdown() && !CONNECT_OUTER_SERVER_EVENTLOOP_GROUP.isShuttingDown()) {
-            log.info("There are no TransferChannel available, so close connect outer server eventloop group!");
-            CONNECT_OUTER_SERVER_EVENTLOOP_GROUP.shutdownGracefully();
-        }
+        // when transfer channel is inactive, inner server will close.
+        channel.eventLoop().parent().shutdownGracefully();
         ExecutorService commonExecutor;
         commonExecutor = ThreadPoolTool.getCommonExecutor();
         if (commonExecutor != null && !commonExecutor.isShutdown()) {

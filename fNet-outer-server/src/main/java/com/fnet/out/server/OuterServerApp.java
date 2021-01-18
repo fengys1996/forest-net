@@ -4,8 +4,9 @@ import com.fnet.common.codec.MessageDecoder;
 import com.fnet.common.codec.MessageEncoder;
 import com.fnet.common.config.Config;
 import com.fnet.common.config.cmd.CmdConfigService;
-import com.fnet.common.net.TcpServer;
+import com.fnet.common.net.NetService;
 import com.fnet.common.service.Sender;
+import com.fnet.common.tool.NetTool;
 import com.fnet.common.tool.ThreadPoolTool;
 import com.fnet.common.transfer.protocol.MessageResolver;
 import com.fnet.out.server.domainCenter.DomainDataService;
@@ -15,20 +16,19 @@ import com.fnet.out.server.handler.OuterServerIdleCheckHandler;
 import com.fnet.out.server.authCenter.AuthService;
 import com.fnet.out.server.task.MonitorBrowserTask;
 import io.netty.channel.*;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
-import org.apache.commons.cli.*;
+import io.netty.util.NettyRuntime;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.net.ssl.SSLException;
-import java.security.cert.CertificateException;
 import java.util.concurrent.CompletableFuture;
-
-import static com.fnet.common.net.TcpServer.*;
 
 /**
  * start outer server here
@@ -48,14 +48,30 @@ public class OuterServerApp {
     @Autowired
     DomainDataService domainDataService;
 
-    public void start() throws ParseException, InterruptedException, CertificateException, SSLException {
+    @Autowired
+    NetService netService;
+
+    public void start() throws Exception {
 
         if (Config.isOuterServerConfigComplete()) {
-            MonitorInnerServerHandler monitorInnerServerHandler;
-            AuthHandler authHandler;
 
-            monitorInnerServerHandler = new MonitorInnerServerHandler(sender, messageResolver, authService, domainDataService);
-            authHandler = new AuthHandler(sender, authService, domainDataService);
+            // create boss and work event loop group
+            int availableProcessors = NettyRuntime.availableProcessors();
+
+            EventLoopGroup bossGroup;
+            EventLoopGroup workGroup;
+            String bossThreadPoolName = "outer_server_boss_group";
+            String workThreadPoolName = "outer_server_work_group";
+            if (!NetTool.isLinuxEnvironment()) {
+                bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory(bossThreadPoolName));
+                workGroup = new NioEventLoopGroup(availableProcessors, new DefaultThreadFactory(workThreadPoolName));
+            } else {
+                bossGroup = new EpollEventLoopGroup(availableProcessors, new DefaultThreadFactory(bossThreadPoolName));
+                workGroup = new EpollEventLoopGroup(availableProcessors, new DefaultThreadFactory(workThreadPoolName));
+            }
+            MonitorInnerServerHandler monitorInnerServerHandler = new MonitorInnerServerHandler(sender, messageResolver, authService, domainDataService);
+            AuthHandler authHandler = new AuthHandler(sender, authService, domainDataService);
+
             // Formal environments require trusted certificates, not selfSignedCertificate!!!
             SelfSignedCertificate selfSignedCertificate = new SelfSignedCertificate();
             SslContext sslContext =
@@ -63,33 +79,33 @@ public class OuterServerApp {
                                      .build();
             System.out.println(selfSignedCertificate.certificate());
 
-            CompletableFuture.runAsync(new MonitorBrowserTask(sender, domainDataService),
+            CompletableFuture.runAsync(new MonitorBrowserTask(sender, domainDataService, netService, bossGroup, workGroup),
                                        ThreadPoolTool.getCommonExecutor());
 
-            new TcpServer().startMonitor(Config.OUTER_SERVER_PORT, new ChannelInitializer<SocketChannel>() {
+            netService.startMonitor(Config.OUTER_SERVER_PORT, new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {
                     ChannelPipeline pipeline = ch.pipeline();
                     pipeline.addLast("idleCheckHandler", new OuterServerIdleCheckHandler());
-                    pipeline.addLast("sslHandler", sslContext.newHandler(ch.alloc()));
+//                    pipeline.addLast("sslHandler", sslContext.newHandler(ch.alloc()));
                     pipeline.addLast("messageEncoder", new MessageEncoder());
                     pipeline.addLast("messageDecoder", new MessageDecoder());
                     pipeline.addLast("authHandler", authHandler);
                     pipeline.addLast("monitorInnerServerHandler", monitorInnerServerHandler);
                 }
-            }, MONITOR_INNER_SERVER_BOSS_EVENTLOOP_GROUP, MONITOR_INNER_SERVER_WORK_EVENTLOOP_GROUP);
+            }, bossGroup, workGroup);
         }
     }
 
     public static void main(String[] args)
-            throws InterruptedException, ParseException, CertificateException, SSLException {
+            throws Exception {
 
         new CmdConfigService().setOuterServerConfig(args);
 
         AnnotationConfigApplicationContext springCtx;
         OuterServerApp outerServerApp;
 
-        springCtx = new AnnotationConfigApplicationContext("com.fnet.out.server");
+        springCtx = new AnnotationConfigApplicationContext("com.fnet.out.server", "com.fnet.common");
         outerServerApp = (OuterServerApp) springCtx.getBean("outerServerApp");
 
         outerServerApp.start();

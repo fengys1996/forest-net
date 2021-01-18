@@ -29,7 +29,7 @@ public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        sender.sendMessageToTransferChannel(new Message(MessageType.TRANSFER_DATA, message.getOuterChannelId(), (byte[])msg));
+        sender.sendMessageToTransferChannelNoFlush(new Message(MessageType.TRANSFER_DATA, message.getOuterChannelId(), (byte[])msg));
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.fnet.inner.server.task;
 
 import com.fnet.common.config.Config;
-import com.fnet.common.net.TcpServer;
+import com.fnet.common.net.NetService;
 import com.fnet.common.service.Sender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.inner.server.handler.MonitorRealServerHandler;
@@ -9,6 +9,7 @@ import com.fnet.inner.server.messageResolver.TransferResolver;
 import com.fnet.inner.server.sender.TransferCache;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
@@ -16,15 +17,18 @@ import lombok.SneakyThrows;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static com.fnet.common.net.TcpServer.*;
-
 public class SendMessageToRealServerTask implements Runnable {
 
     LinkedBlockingQueue<Message> messageQueue = TransferResolver.MESSAGE_QUEUE;
-    Sender sender;
 
-    public SendMessageToRealServerTask(Sender sender) {
+    Sender sender;
+    EventLoopGroup workGroup;
+    NetService netService;
+
+    public SendMessageToRealServerTask(Sender sender, NetService netService, EventLoopGroup workGroup) {
         this.sender = sender;
+        this.workGroup = workGroup;
+        this.netService = netService;
     }
 
     @SneakyThrows
@@ -41,20 +45,20 @@ public class SendMessageToRealServerTask implements Runnable {
             if (innerChannel != null) {
                 sender.sendBytesToRealServer(message);
             } else {
-                new TcpServer(){
-                    @Override
-                    public void doSomeThingAfterConnectSuccess(Channel channel) {
-                        TransferCache.addToMap(message.getOuterChannelId(), channel);
-                        sender.sendBytesToRealServer(channel, message);
-                    }
-                }.startConnect1(Config.REAL_SERVER_ADDRESS, Config.REAL_SERVER_PORT, CONNECT_REAL_SERVER_EVENTLOOP_GROUP, new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new ByteArrayDecoder(),
-                                              new ByteArrayEncoder(),
-                                              new MonitorRealServerHandler(message, sender));
-                    }
-                }, 1);
+                Channel channel =
+                        netService.startConnect(Config.REAL_SERVER_ADDRESS, Config.REAL_SERVER_PORT,
+                                                                 new ChannelInitializer<SocketChannel>() {
+                                                                   @Override
+                                                                   protected void initChannel(SocketChannel ch)
+                                                                           throws Exception {
+                                                                       ch.pipeline().addLast(new ByteArrayDecoder(),
+                                                                                             new ByteArrayEncoder(),
+                                                                                             new MonitorRealServerHandler(
+                                                                                                     message, sender));
+                                                                   }
+                                                               }, workGroup);
+                TransferCache.addToMap(message.getOuterChannelId(), channel);
+                sender.sendBytesToRealServer(channel, message);
             }
         }
     }

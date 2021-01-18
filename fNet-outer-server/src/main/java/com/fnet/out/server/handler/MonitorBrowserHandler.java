@@ -32,7 +32,12 @@ public class MonitorBrowserHandler extends ChannelInboundHandlerAdapter {
         outerChannelId = ctx.channel().hashCode();
 
         Message message = new Message(MessageType.TRANSFER_DATA, outerChannelId, bytes);
-        sender.sendMessageToTransferChannel(message);
+        sender.sendMessageToTransferChannelNoFlush(message);
+    }
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        sender.flush(ctx.channel().hashCode());
     }
 
     @Override
