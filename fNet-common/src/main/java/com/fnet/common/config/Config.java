@@ -16,6 +16,7 @@ public class Config {
     public static final int DEFAULT_READ_LIMIT = 0;
     public static final int DEFAULT_WRITE_LIMIT = 0;
     public static final String DEFAULT_DOMAIN_NAME_LIST = "";
+    public static final int DEFAULT_ENABLE_SUPPORT_SO_REUSEPORT = 0;
 
     public static int OUTER_REMOTE_PORT;
     public static int OUTER_SERVER_PORT;
@@ -27,6 +28,7 @@ public class Config {
     public static int READ_LIMIT = 0;
     public static int WRITE_LIMIT = 0;
     public static String DOMAIN_NAME_LIST;
+    public static int IS_ENABLE_SO_REUSEPORT;
 
     public static boolean isInnerServerConfigComplete() {
         return !StringUtil.isNullOrEmpty(Config.OUTER_SERVER_ADDRESS) && !StringUtil.isNullOrEmpty(Config.PASSWORD) && Config.OUTER_SERVER_PORT != 0

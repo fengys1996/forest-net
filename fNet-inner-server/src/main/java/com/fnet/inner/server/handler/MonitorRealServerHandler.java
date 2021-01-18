@@ -23,7 +23,7 @@ public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        log.info("A channel connect real server!");
+        log.debug("A channel connect real server!");
         TransferCache.addToMap(message.getOuterChannelId(), ctx.channel());
     }
 
@@ -39,7 +39,7 @@ public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        log.info("A channel disconnect real server!");
+        log.debug("A channel disconnect real server!");
         TransferCache.removeFromMap(message.getOuterChannelId());
         ctx.channel().close();
         super.channelInactive(ctx);

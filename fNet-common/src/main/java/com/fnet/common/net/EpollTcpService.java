@@ -1,5 +1,6 @@
 package com.fnet.common.net;
 
+import com.fnet.common.config.Config;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -42,11 +43,19 @@ public class EpollTcpService implements NetService {
                      .childOption(WRITE_BUFFER_WATER_MARK, WRITE_BUFFER_WATER_MARK_OF_OUTER_SERVER)
                      .localAddress(new InetSocketAddress(port))
                      .childHandler(channelInitializer);
-            for (int i = 0 ; i < NettyRuntime.availableProcessors() ; i++) {
-                ChannelFuture channelFuture = bootstrap.bind().sync();
+            int listenNum = 1;
+            if (Config.IS_ENABLE_SO_REUSEPORT == 1) {
+                bootstrap.option(EpollChannelOption.SO_REUSEPORT, true);
+                listenNum = NettyRuntime.availableProcessors();
+            }
+            for (int i = 0; i < listenNum; i++) {
+                ChannelFuture channelFuture = bootstrap.bind().sync().addListener(o->{
+                    if (o.isSuccess()) {
+                        log.info("A thread listen port: {}", port);
+                    }
+                });
                 channelFuture.channel().closeFuture().sync();
             }
-            log.info("listen port: {}", port);
         }
         finally {
             bossGroup.shutdownGracefully().sync();
