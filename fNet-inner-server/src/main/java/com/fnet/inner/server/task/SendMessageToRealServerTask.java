@@ -11,8 +11,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.bytes.ByteArrayDecoder;
-import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import lombok.SneakyThrows;
 
 import java.util.concurrent.LinkedBlockingQueue;
@@ -47,16 +45,13 @@ public class SendMessageToRealServerTask implements Runnable {
             } else {
                 Channel channel =
                         netService.startConnect(Config.REAL_SERVER_ADDRESS, Config.REAL_SERVER_PORT,
-                                                                 new ChannelInitializer<SocketChannel>() {
-                                                                   @Override
-                                                                   protected void initChannel(SocketChannel ch)
-                                                                           throws Exception {
-                                                                       ch.pipeline().addLast(new ByteArrayDecoder(),
-                                                                                             new ByteArrayEncoder(),
-                                                                                             new MonitorRealServerHandler(
-                                                                                                     message, sender));
-                                                                   }
-                                                               }, workGroup);
+                                     new ChannelInitializer<SocketChannel>() {
+                                       @Override
+                                       protected void initChannel(SocketChannel ch)
+                                               throws Exception {
+                                           ch.pipeline().addLast(new MonitorRealServerHandler(message, sender));
+                                       }
+                                   }, workGroup);
                 TransferCache.addToMap(message.getOuterChannelId(), channel);
                 sender.sendBytesToRealServer(channel, message);
             }

@@ -42,7 +42,7 @@ public class MonitorBrowserTask implements Runnable {
                     if (Config.READ_LIMIT != 0 || Config.WRITE_LIMIT != 0) {
                         pipeline.addLast(new GlobalTrafficShapingHandler(new NioEventLoopGroup(), Config.WRITE_LIMIT, Config.READ_LIMIT, 1000, 1000));
                     }
-                    pipeline.addLast(new CheckHostHandler(domainDataService), new ByteArrayEncoder(), new ByteArrayDecoder(), new MonitorBrowserHandler(sender));
+                    pipeline.addLast(new CheckHostHandler(domainDataService), new MonitorBrowserHandler(sender));
                 }
             }, bossGroup, workGroup);
         } catch (Exception e) {

@@ -9,6 +9,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -47,6 +48,7 @@ public class AuthHandler extends SimpleChannelInboundHandler<Message> {
                 }
             }
         } finally {
+            ReferenceCountUtil.release(msg.getPayLoad());
             log.debug("remove auth handler in pipeline!");
             ctx.pipeline().remove(this);
         }

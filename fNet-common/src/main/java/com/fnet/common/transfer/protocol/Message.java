@@ -1,5 +1,7 @@
 package com.fnet.common.transfer.protocol;
 
+import io.netty.buffer.ByteBuf;
+
 /**
  * Carrier of communication(outer server <-> inner server)
  */
@@ -7,7 +9,7 @@ public class Message {
 
     private MessageType type;
     private int outerChannelId;
-    private byte[] data;
+    private ByteBuf payLoad;
 
     public Message() {
     }
@@ -15,13 +17,13 @@ public class Message {
     public Message(MessageType type) {
         this.type = type;
         this.outerChannelId = 0;
-        this.data = null;
+        this.payLoad = null;
     }
 
-    public Message(MessageType type, int outerChannelId , byte[] data) {
+    public Message(MessageType type, int outerChannelId, ByteBuf payLoad) {
         this.type = type;
         this.outerChannelId = outerChannelId;
-        this.data = data;
+        this.payLoad = payLoad;
     }
 
     public MessageType getType() {
@@ -40,11 +42,11 @@ public class Message {
         this.outerChannelId = outerChannelId;
     }
 
-    public byte[] getData() {
-        return data;
+    public ByteBuf getPayLoad() {
+        return payLoad;
     }
 
-    public void setData(byte[] data) {
-        this.data = data;
+    public void setPayLoad(ByteBuf payLoad) {
+        this.payLoad = payLoad;
     }
 }

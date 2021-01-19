@@ -4,11 +4,10 @@ import com.fnet.common.service.Sender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
 import com.fnet.inner.server.sender.TransferCache;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.io.IOException;
 
 @Slf4j
 public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
@@ -29,7 +28,7 @@ public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        sender.sendMessageToTransferChannelNoFlush(new Message(MessageType.TRANSFER_DATA, message.getOuterChannelId(), (byte[])msg));
+        sender.sendMessageToTransferChannelNoFlush(new Message(MessageType.TRANSFER_DATA, message.getOuterChannelId(), (ByteBuf) msg));
     }
 
     @Override
@@ -43,17 +42,5 @@ public class MonitorRealServerHandler extends ChannelInboundHandlerAdapter {
         TransferCache.removeFromMap(message.getOuterChannelId());
         ctx.channel().close();
         super.channelInactive(ctx);
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
-            throws Exception {
-        if (cause instanceof IOException) {
-            if ("远程主机强迫关闭了一个现有的连接。".equals(cause.getMessage())) {
-                log.info("远程主机强迫关闭了一个现有的连接。");
-                return;
-            }
-        }
-        ctx.fireExceptionCaught(cause);
     }
 }

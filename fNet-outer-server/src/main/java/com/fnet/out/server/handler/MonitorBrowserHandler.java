@@ -4,6 +4,7 @@ import com.fnet.common.service.Sender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
 import com.fnet.out.server.sender.TransferCache;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,13 +26,10 @@ public class MonitorBrowserHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        byte[] bytes;
-        int outerChannelId;
+        int outerChannelId = ctx.channel().hashCode();
+        ByteBuf byteBuf = (ByteBuf)msg;
 
-        bytes = (byte[])msg;
-        outerChannelId = ctx.channel().hashCode();
-
-        Message message = new Message(MessageType.TRANSFER_DATA, outerChannelId, bytes);
+        Message message = new Message(MessageType.TRANSFER_DATA, outerChannelId, byteBuf);
         sender.sendMessageToTransferChannelNoFlush(message);
     }
 

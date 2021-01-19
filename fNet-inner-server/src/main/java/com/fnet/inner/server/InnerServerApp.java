@@ -2,6 +2,7 @@ package com.fnet.inner.server;
 
 import com.fnet.common.codec.MessageDecoder;
 import com.fnet.common.codec.MessageEncoder;
+import com.fnet.common.codec.MyLengthFieldBasedFrameDecoder;
 import com.fnet.common.config.Config;
 import com.fnet.common.config.cmd.CmdConfigService;
 import com.fnet.common.net.NetService;
@@ -77,6 +78,7 @@ public class InnerServerApp {
                     ChannelPipeline pipeline = ch.pipeline();
                     pipeline.addLast("idleCheckHandler",  new IdleStateHandler(0, 5, 0));
 //                    pipeline.addLast("sslHandler", sslContext.newHandler(ch.alloc()));
+                    pipeline.addLast("myLengthFieldBasedFrameDecoder", new MyLengthFieldBasedFrameDecoder());
                     pipeline.addLast("messageEncoder", new MessageEncoder());
                     pipeline.addLast("messageDecoder", new MessageDecoder());
                     pipeline.addLast("registerHandler", registerHandler);

@@ -3,6 +3,8 @@ package com.fnet.out.server.authCenter;
 import com.fnet.common.config.Config;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +17,8 @@ public class DefaultAuthServiceImpl implements AuthService {
     @Override
     public boolean registerAuth(Message message, InetSocketAddress inetSocketAddress) {
         if (message.getType() == MessageType.REGISTER) {
-            byte[] data = message.getData();
+            ByteBuf payLoad = message.getPayLoad();
+            byte[] data = ByteBufUtil.getBytes(payLoad);
             if (data != null) {
                 String password = new String(data);
                 if (Config.PASSWORD.equals(password)) {

@@ -4,26 +4,27 @@ import com.fnet.common.transfer.protocol.MessageType;
 import com.fnet.common.transfer.protocol.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ReplayingDecoder;
+import io.netty.handler.codec.MessageToMessageDecoder;
 
 import java.util.List;
 
 /**
  * decoder(bytes -> message)
  */
-public class MessageDecoder extends ReplayingDecoder<Void> {
+public class MessageDecoder extends MessageToMessageDecoder {
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+    protected void decode(ChannelHandlerContext ctx, Object msg, List out) throws Exception {
+        ByteBuf in = (ByteBuf) msg;
         byte messageType = in.readByte();
         int outerChannelId = in.readInt();
+
+        ByteBuf payload = null;
         int length = in.readInt();
-        if (length == 0) {
-            out.add(new Message(MessageType.valueOf(messageType), outerChannelId, null));
-        } else {
-            byte[] data = new byte[length];
-            in.readBytes(data);
-            out.add(new Message(MessageType.valueOf(messageType), outerChannelId, data));
+        if (length != 0) {
+            payload = in.retainedSlice(in.readerIndex(), length);
         }
+        Message message = new Message(MessageType.valueOf(messageType), outerChannelId, payload);
+        out.add(message);
     }
 }

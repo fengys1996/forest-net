@@ -5,6 +5,7 @@ import com.fnet.common.service.Sender;
 import com.fnet.common.tool.ObjectTool;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -50,7 +51,7 @@ public class DefaultInnerSenderImpl implements Sender {
     @Override
     public void sendBytesToRealServer(Channel channel, Message message) {
         if (ObjectTool.checkChannel(channel)) {
-            channel.writeAndFlush(message.getData());
+            channel.writeAndFlush(message.getPayLoad());
         }
     }
 
@@ -59,7 +60,7 @@ public class DefaultInnerSenderImpl implements Sender {
     @Override
     public void sendRegisterMessage(Channel channel) {
         if (ObjectTool.checkChannel(channel)) {
-            registerMessage.setData(Config.PASSWORD.getBytes());
+            registerMessage.setPayLoad(Unpooled.wrappedBuffer(Config.PASSWORD.getBytes()));
             channel.writeAndFlush(registerMessage);
         }
     }

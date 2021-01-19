@@ -4,6 +4,7 @@ import com.fnet.common.service.Sender;
 import com.fnet.common.tool.ObjectTool;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +44,7 @@ public class DefaultOuterSenderImpl implements Sender {
         Channel outerChannel = outerChannelMap.get(outerChannelId);
 
         if (ObjectTool.checkChannel(outerChannel)) {
-            outerChannel.writeAndFlush(message.getData());
+            outerChannel.writeAndFlush(message.getPayLoad());
         }
     }
 
@@ -53,7 +54,7 @@ public class DefaultOuterSenderImpl implements Sender {
 
     @Override
     public void sendRegisterResponseMessage(boolean isSuccess, byte[] data, Channel channel) {
-        registerMessage.setData(isSuccess ? data : falseBytes);
+        registerMessage.setPayLoad(isSuccess ? Unpooled.wrappedBuffer(data) : Unpooled.wrappedBuffer(falseBytes));
         registerMessage.setType(MessageType.REGISTER_RESULT);
         if (ObjectTool.checkChannel(channel)) {
             channel.writeAndFlush(registerMessage);
@@ -82,11 +83,11 @@ public class DefaultOuterSenderImpl implements Sender {
             return;
         }
 
-        Channel tranferChannel =
+        Channel transferChannel =
                 outerChannel2TransferChannelReleatedCache.get(outerChannelId);
 
-        if (ObjectTool.checkChannel(tranferChannel)) {
-            tranferChannel.flush();
+        if (ObjectTool.checkChannel(transferChannel)) {
+            transferChannel.flush();
         }
     }
 }
