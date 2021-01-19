@@ -26,12 +26,14 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.NettyRuntime;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Component
 public class InnerServerApp {
 
@@ -86,6 +88,12 @@ public class InnerServerApp {
                     pipeline.addLast("monitorOuterServerHandler", monitorOuterServerHandler);
                 }
             }, workGroup);
+
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                log.info("start shutdown hook!");
+                workGroup.shutdownGracefully();
+                ThreadPoolTool.getCommonExecutor().shutdownNow();
+            }));
         }
     }
 

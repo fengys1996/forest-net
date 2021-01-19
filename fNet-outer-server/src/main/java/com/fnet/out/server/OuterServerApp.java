@@ -25,6 +25,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.util.NettyRuntime;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * start outer server here
  */
+@Slf4j
 @Component
 public class OuterServerApp {
 
@@ -96,6 +98,13 @@ public class OuterServerApp {
                     pipeline.addLast("monitorInnerServerHandler", monitorInnerServerHandler);
                 }
             }, bossGroup, workGroup);
+
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                log.info("start shutdown hook!");
+                bossGroup.shutdownGracefully();
+                workGroup.shutdownGracefully();
+                ThreadPoolTool.getCommonExecutor().shutdownNow();
+            }));
         }
     }
 

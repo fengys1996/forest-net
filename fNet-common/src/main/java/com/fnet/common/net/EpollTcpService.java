@@ -11,6 +11,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.epoll.EpollServerSocketChannel;
+import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.util.NettyRuntime;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,8 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static io.netty.channel.ChannelOption.*;
 
@@ -33,33 +36,34 @@ public class EpollTcpService implements NetService {
 
     @Override
     public void startMonitor(int port, ChannelInitializer<SocketChannel> channelInitializer, EventLoopGroup bossGroup, EventLoopGroup workGroup) throws InterruptedException {
-        try {
-            ServerBootstrap bootstrap = new ServerBootstrap();
-            bootstrap.group(bossGroup, workGroup)
-                     .channel(EpollServerSocketChannel.class)
-                     .option(ChannelOption.SO_BACKLOG, 128)
-                     .option(EpollChannelOption.SO_REUSEPORT, true)
-                     .childOption(ChannelOption.SO_KEEPALIVE, true)
-                     .childOption(WRITE_BUFFER_WATER_MARK, WRITE_BUFFER_WATER_MARK_OF_OUTER_SERVER)
-                     .localAddress(new InetSocketAddress(port))
-                     .childHandler(channelInitializer);
-            int listenNum = 1;
-            if (Config.IS_ENABLE_SO_REUSEPORT == 1) {
-                bootstrap.option(EpollChannelOption.SO_REUSEPORT, true);
-                listenNum = NettyRuntime.availableProcessors();
-            }
-            for (int i = 0; i < listenNum; i++) {
-                ChannelFuture channelFuture = bootstrap.bind().sync().addListener(o->{
-                    if (o.isSuccess()) {
-                        log.info("A thread listen port: {}", port);
-                    }
-                });
-                channelFuture.channel().closeFuture().sync();
-            }
+        ServerBootstrap bootstrap = new ServerBootstrap();
+        bootstrap.group(bossGroup, workGroup)
+                 .channel(EpollServerSocketChannel.class)
+                 .option(ChannelOption.SO_BACKLOG, 128)
+                 .option(EpollChannelOption.SO_REUSEPORT, true)
+                 .childOption(ChannelOption.SO_KEEPALIVE, true)
+                 .childOption(WRITE_BUFFER_WATER_MARK, WRITE_BUFFER_WATER_MARK_OF_OUTER_SERVER)
+                 .localAddress(new InetSocketAddress(port))
+                 .childHandler(channelInitializer);
+
+        int listenSocketNum = 1;
+        if (Config.IS_ENABLE_SO_REUSEPORT == 1) {
+            log.info("Enable so_resueport!");
+            bootstrap.option(EpollChannelOption.SO_REUSEPORT, true);
+            listenSocketNum = NettyRuntime.availableProcessors();
         }
-        finally {
-            bossGroup.shutdownGracefully().sync();
-            workGroup.shutdownGracefully().sync();
+
+        CountDownLatch countDownLatch = new CountDownLatch(listenSocketNum);
+
+        for (int i = 0; i < listenSocketNum; i++) {
+            bootstrap.bind().addListener(o->{
+                if (o.isSuccess()) {
+                    countDownLatch.countDown();
+                }
+            });
+        }
+        if (countDownLatch.await(2000, TimeUnit.MILLISECONDS)) {
+            log.info("listen port: {}", port);
         }
     }
 
@@ -68,7 +72,7 @@ public class EpollTcpService implements NetService {
                                 EventLoopGroup workGroup) throws InterruptedException {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(workGroup)
-                 .channel(EpollServerSocketChannel.class)
+                 .channel(EpollSocketChannel.class)
                  .option(WRITE_BUFFER_WATER_MARK, WRITE_BUFFER_WATER_MARK_OF_INNER_SERVER)
                  .option(ChannelOption.TCP_NODELAY, true)
                  .handler(channelInitializer);
