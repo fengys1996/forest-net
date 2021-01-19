@@ -14,7 +14,7 @@ Intranet penetration tool（内网穿透工具）
 - 支持outer server整体流量控制。
 
 ### 架构图
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210113185821299.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MjU1Nzcy,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210119134050795.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MjU1Nzcy,size_16,color_FFFFFF,t_70)
 
 
 ### 架构说明
