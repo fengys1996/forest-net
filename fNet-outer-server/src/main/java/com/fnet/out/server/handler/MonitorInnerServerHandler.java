@@ -4,7 +4,7 @@ import com.fnet.common.service.Sender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageResolver;
 import com.fnet.out.server.domainCenter.DomainDataService;
-import com.fnet.out.server.authCenter.AuthService;
+import com.fnet.common.authCenter.Authencator;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -20,7 +20,7 @@ public class MonitorInnerServerHandler extends ChannelInboundHandlerAdapter {
     MessageResolver resolver;
     DomainDataService domainDataService;
 
-    public MonitorInnerServerHandler(Sender sender, MessageResolver resolver, AuthService authService, DomainDataService domainDataService) {
+    public MonitorInnerServerHandler(Sender sender, MessageResolver resolver, Authencator authencator, DomainDataService domainDataService) {
         this.sender = sender;
         this.resolver = resolver;
         this.domainDataService = domainDataService;

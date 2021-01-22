@@ -1,6 +1,6 @@
 package com.fnet.out.server.task;
 
-import com.fnet.common.config.Config;
+import com.fnet.common.config.OuterServerConfig;
 import com.fnet.common.net.NetService;
 import com.fnet.common.service.Sender;
 import com.fnet.out.server.domainCenter.DomainDataService;
@@ -20,25 +20,27 @@ public class MonitorBrowserTask implements Runnable {
     DomainDataService domainDataService;
     NetService netService;
 
+    OuterServerConfig config;
     EventLoopGroup bossGroup;
     EventLoopGroup workGroup;
 
-    public MonitorBrowserTask(Sender sender, DomainDataService domainDataService, NetService netService, EventLoopGroup bossGroup, EventLoopGroup workGroup) {
+    public MonitorBrowserTask(Sender sender, DomainDataService domainDataService, NetService netService, OuterServerConfig config, EventLoopGroup bossGroup, EventLoopGroup workGroup) {
         this.sender = sender;
         this.domainDataService = domainDataService;
         this.netService = netService;
+        this.config = config;
         this.bossGroup = bossGroup;
         this.workGroup = workGroup;
     }
 
     private void startMonitorBrowserAsync() {
         try {
-            netService.startMonitor(Config.OUTER_REMOTE_PORT, new ChannelInitializer<SocketChannel>() {
+            netService.startMonitor(config.getOspForBrowser(), new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {
                     ChannelPipeline pipeline = ch.pipeline();
-                    if (Config.READ_LIMIT != 0 || Config.WRITE_LIMIT != 0) {
-                        pipeline.addLast(new GlobalTrafficShapingHandler(new NioEventLoopGroup(), Config.WRITE_LIMIT, Config.READ_LIMIT, 1000, 1000));
+                    if (config.getWriteLimit() != 0 || config.getReadLimit() != 0) {
+                        pipeline.addLast(new GlobalTrafficShapingHandler(new NioEventLoopGroup(), config.getWriteLimit(), config.getReadLimit(), 1000, 1000));
                     }
                     pipeline.addLast(new CheckHostHandler(domainDataService), new MonitorBrowserHandler(sender));
                 }

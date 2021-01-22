@@ -11,6 +11,10 @@ public interface Sender {
         throw new UnsupportedOperationException();
     }
 
+    default void sendMessageToTransferChannel(Message message, Channel channel) {
+        throw new UnsupportedOperationException();
+    }
+
     default void sendMessageToTransferChannelNoFlush(Message message) {
         throw new UnsupportedOperationException();
     }
@@ -25,14 +29,6 @@ public interface Sender {
     }
 
     default void sendBytesToRealServer(Channel channel, Message message) {
-        throw new UnsupportedOperationException();
-    }
-
-    default void sendRegisterMessage(Channel channel) {
-        throw new UnsupportedOperationException();
-    }
-
-    default void sendHeartBeatMessage(Channel channel) {
         throw new UnsupportedOperationException();
     }
 

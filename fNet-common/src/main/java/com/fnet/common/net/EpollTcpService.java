@@ -9,10 +9,10 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
-import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.unix.UnixChannelOption;
 import io.netty.util.NettyRuntime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Conditional;
@@ -34,22 +34,27 @@ public class EpollTcpService implements NetService {
     private static final WriteBufferWaterMark
             WRITE_BUFFER_WATER_MARK_OF_INNER_SERVER = new WriteBufferWaterMark(2 * 1024 * 1024, 4 * 1024 * 1024);
 
+    private int enableSoResuePort;
+
+    public void setEnableSoResuePort(int enableSoResuePort) {
+        this.enableSoResuePort = enableSoResuePort;
+    }
+
     @Override
     public void startMonitor(int port, ChannelInitializer<SocketChannel> channelInitializer, EventLoopGroup bossGroup, EventLoopGroup workGroup) throws InterruptedException {
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup, workGroup)
                  .channel(EpollServerSocketChannel.class)
                  .option(ChannelOption.SO_BACKLOG, 128)
-                 .option(EpollChannelOption.SO_REUSEPORT, true)
                  .childOption(ChannelOption.SO_KEEPALIVE, true)
                  .childOption(WRITE_BUFFER_WATER_MARK, WRITE_BUFFER_WATER_MARK_OF_OUTER_SERVER)
                  .localAddress(new InetSocketAddress(port))
                  .childHandler(channelInitializer);
 
         int listenSocketNum = 1;
-        if (Config.IS_ENABLE_SO_REUSEPORT == 1) {
+        if (enableSoResuePort == 1) {
             log.info("Enable so_resueport!");
-            bootstrap.option(EpollChannelOption.SO_REUSEPORT, true);
+            bootstrap.option(UnixChannelOption.SO_REUSEPORT, true);
             listenSocketNum = NettyRuntime.availableProcessors();
         }
 

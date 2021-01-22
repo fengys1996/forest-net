@@ -8,8 +8,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-
 @Slf4j
 public class MonitorBrowserHandler extends ChannelInboundHandlerAdapter {
 
@@ -42,17 +40,5 @@ public class MonitorBrowserHandler extends ChannelInboundHandlerAdapter {
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         log.debug("A channel disconnect browser!");
         TransferCache.removeOuterChannel(ctx.channel());
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
-            throws Exception {
-        if (cause instanceof IOException) {
-            if ("远程主机强迫关闭了一个现有的连接。".equals(cause.getMessage())) {
-                log.info("远程主机强迫关闭了一个现有的连接。");
-                return;
-            }
-        }
-        ctx.fireExceptionCaught(cause);
     }
 }

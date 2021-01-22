@@ -2,30 +2,19 @@ package com.fnet.out.server.domainCenter;
 
 import io.netty.channel.Channel;
 
-import java.net.UnknownHostException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author fys
  */
 public interface DomainDataService {
 
-    /**
-     * 初始化Domain数据
-     */
-    void initData() throws Exception;
+    Map<String, DomainInfo> initData(List<String> domainList) throws Exception;
 
-    /**
-     * 颁发一个域名
-     */
     DomainInfo issueDomain();
 
-    /**
-     * 回收一个域名
-     */
     void recoveryDomainByTransferChannel(Channel channel);
 
-    /**
-     * 根据域名获取transfer channel
-     */
     Channel getTransferChannelByDomainName(String domainName);
 }

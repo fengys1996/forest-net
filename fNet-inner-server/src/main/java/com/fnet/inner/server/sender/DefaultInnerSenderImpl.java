@@ -1,26 +1,33 @@
 package com.fnet.inner.server.sender;
 
-import com.fnet.common.config.Config;
+import com.fnet.common.config.InnerServerConfig;
 import com.fnet.common.service.Sender;
 import com.fnet.common.tool.ObjectTool;
 import com.fnet.common.transfer.protocol.Message;
-import com.fnet.common.transfer.protocol.MessageType;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import static com.fnet.common.transfer.protocol.MessageConstant.*;
 
 @Slf4j
 @Component
 public class DefaultInnerSenderImpl implements Sender {
+
+    @Autowired
+    InnerServerConfig config;
 
     @Override
     public void sendMessageToTransferChannel(Message message) {
         Channel transferChannel = TransferCache.getTransferChannel();
         if (ObjectTool.checkChannel(transferChannel)) {
             transferChannel.writeAndFlush(message);
+        }
+    }
+
+    @Override
+    public void sendMessageToTransferChannel(Message message, Channel channel) {
+        if (ObjectTool.checkChannel(channel)) {
+            channel.writeAndFlush(message);
         }
     }
 
@@ -52,23 +59,6 @@ public class DefaultInnerSenderImpl implements Sender {
     public void sendBytesToRealServer(Channel channel, Message message) {
         if (ObjectTool.checkChannel(channel)) {
             channel.writeAndFlush(message.getPayLoad());
-        }
-    }
-
-    Message registerMessage = new Message(MessageType.REGISTER, 0, null);
-
-    @Override
-    public void sendRegisterMessage(Channel channel) {
-        if (ObjectTool.checkChannel(channel)) {
-            registerMessage.setPayLoad(Unpooled.wrappedBuffer(Config.PASSWORD.getBytes()));
-            channel.writeAndFlush(registerMessage);
-        }
-    }
-
-    @Override
-    public void sendHeartBeatMessage(Channel channel) {
-        if (ObjectTool.checkChannel(channel)) {
-            channel.writeAndFlush(HEART_BEAT_MESSAGE);
         }
     }
 }

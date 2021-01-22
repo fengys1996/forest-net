@@ -4,7 +4,7 @@ import com.fnet.common.service.Sender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.out.server.domainCenter.DomainDataService;
 import com.fnet.out.server.domainCenter.DomainInfo;
-import com.fnet.out.server.authCenter.AuthService;
+import com.fnet.common.authCenter.Authencator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -20,12 +20,12 @@ import java.net.SocketAddress;
 public class AuthHandler extends SimpleChannelInboundHandler<Message> {
 
     Sender sender;
-    AuthService authService;
+    Authencator authencator;
     DomainDataService domainDataService;
 
-    public AuthHandler(Sender sender, AuthService authService, DomainDataService domainDataService) {
+    public AuthHandler(Sender sender, Authencator authencator, DomainDataService domainDataService) {
         this.sender = sender;
-        this.authService = authService;
+        this.authencator = authencator;
         this.domainDataService = domainDataService;
     }
 
@@ -39,7 +39,7 @@ public class AuthHandler extends SimpleChannelInboundHandler<Message> {
                 InetSocketAddress remoteAddress = (InetSocketAddress)socketAddress;
                 DomainInfo domainInfo = null;
                 boolean isRegisterSuccess =
-                        authService.registerAuth(msg, remoteAddress) && (domainInfo = issueAndSetupDomain(remoteAddress, channel)) != null;
+                        authencator.registerAuth(msg, remoteAddress) && (domainInfo = issueAndSetupDomain(remoteAddress, channel)) != null;
                 if (isRegisterSuccess) {
                     sender.sendRegisterResponseMessage(true, domainInfo.getDomainName().getBytes() , channel);
                 } else {

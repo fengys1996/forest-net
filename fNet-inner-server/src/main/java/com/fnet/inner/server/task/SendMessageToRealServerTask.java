@@ -1,6 +1,5 @@
 package com.fnet.inner.server.task;
 
-import com.fnet.common.config.Config;
 import com.fnet.common.net.NetService;
 import com.fnet.common.service.Sender;
 import com.fnet.common.transfer.protocol.Message;
@@ -23,10 +22,15 @@ public class SendMessageToRealServerTask implements Runnable {
     EventLoopGroup workGroup;
     NetService netService;
 
-    public SendMessageToRealServerTask(Sender sender, NetService netService, EventLoopGroup workGroup) {
+    String realServerAddr;
+    int realServerPort;
+
+    public SendMessageToRealServerTask(Sender sender, NetService netService, EventLoopGroup workGroup, String realServerAddr, int realServerPort) {
         this.sender = sender;
         this.workGroup = workGroup;
         this.netService = netService;
+        this.realServerAddr = realServerAddr;
+        this.realServerPort = realServerPort;
     }
 
     @SneakyThrows
@@ -44,7 +48,7 @@ public class SendMessageToRealServerTask implements Runnable {
                 sender.sendBytesToRealServer(message);
             } else {
                 Channel channel =
-                        netService.startConnect(Config.REAL_SERVER_ADDRESS, Config.REAL_SERVER_PORT,
+                        netService.startConnect(realServerAddr, realServerPort,
                                      new ChannelInitializer<SocketChannel>() {
                                        @Override
                                        protected void initChannel(SocketChannel ch)

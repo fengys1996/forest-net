@@ -1,14 +1,12 @@
 package com.fnet.out.server.domainCenter;
 
-import com.fnet.common.config.Config;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -22,19 +20,16 @@ public class DefaultDomainDataServiceImpl implements DomainDataService {
     /**
      * domain name ==== domain info
      */
-    public Map<String, DomainInfo> data = new HashMap<>(16);
+    private final Map<String, DomainInfo> data = new HashMap<>(16);
 
-    @PostConstruct
     @Override
-    public void initData() throws UnknownHostException {
-        InetAddress localHost = InetAddress.getLocalHost();
-        String hostAddress = localHost.getHostAddress();
-
-        String domainNameData = Config.DOMAIN_NAME_LIST;
-        String[] domainNameList = domainNameData.split("\\*");
-        for (String domainName : domainNameList) {
-            data.put(domainName, new DomainInfo(domainName, hostAddress));
-        }
+    public Map<String, DomainInfo> initData(List<String> domainList) {
+        domainList.forEach(domainName -> {
+            if (domainName != null && !domainName.isEmpty()) {
+                data.put(domainName, new DomainInfo(domainName, ""));
+            }
+        });
+        return Collections.unmodifiableMap(data);
     }
 
     @Override
