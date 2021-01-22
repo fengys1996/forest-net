@@ -82,7 +82,11 @@ public class CheckHostHandler extends ChannelInboundHandlerAdapter {
     }
 
     private boolean doSomethingAfterFindHost(String host, ByteBuf slice , ChannelHandlerContext ctx) throws Exception {
-        Channel transferChannel = domainDataService.getTransferChannelByDomainName(host);
+        String[] domainAndPort = host.split(":");
+        if (domainAndPort.length == 0) {
+            return false;
+        }
+        Channel transferChannel = domainDataService.getTransferChannelByDomainName(domainAndPort[0]);
         if (transferChannel != null) {
             TransferCache.addOuterChannel(ctx.channel() , transferChannel);
             ctx.pipeline().remove(this);

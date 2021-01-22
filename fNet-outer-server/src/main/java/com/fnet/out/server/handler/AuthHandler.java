@@ -1,5 +1,6 @@
 package com.fnet.out.server.handler;
 
+import com.fnet.common.config.OuterServerConfig;
 import com.fnet.common.service.Sender;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.out.server.domainCenter.DomainDataService;
@@ -22,11 +23,13 @@ public class AuthHandler extends SimpleChannelInboundHandler<Message> {
     Sender sender;
     Authencator authencator;
     DomainDataService domainDataService;
+    OuterServerConfig config;
 
-    public AuthHandler(Sender sender, Authencator authencator, DomainDataService domainDataService) {
+    public AuthHandler(Sender sender, Authencator authencator, DomainDataService domainDataService, OuterServerConfig config) {
         this.sender = sender;
         this.authencator = authencator;
         this.domainDataService = domainDataService;
+        this.config = config;
     }
 
     @Override
@@ -41,7 +44,8 @@ public class AuthHandler extends SimpleChannelInboundHandler<Message> {
                 boolean isRegisterSuccess =
                         authencator.registerAuth(msg, remoteAddress) && (domainInfo = issueAndSetupDomain(remoteAddress, channel)) != null;
                 if (isRegisterSuccess) {
-                    sender.sendRegisterResponseMessage(true, domainInfo.getDomainName().getBytes() , channel);
+                    String domainAndPort = domainInfo.getDomainName() + ':' + config.getOspForBrowser();
+                    sender.sendRegisterResponseMessage(true, domainAndPort.getBytes(), channel);
                 } else {
                     sender.sendRegisterResponseMessage(false, null, channel);
                     channel.close();

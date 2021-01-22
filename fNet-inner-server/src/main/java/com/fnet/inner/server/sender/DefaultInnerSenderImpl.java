@@ -1,20 +1,15 @@
 package com.fnet.inner.server.sender;
 
-import com.fnet.common.config.InnerServerConfig;
 import com.fnet.common.service.Sender;
 import com.fnet.common.tool.ObjectTool;
 import com.fnet.common.transfer.protocol.Message;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class DefaultInnerSenderImpl implements Sender {
-
-    @Autowired
-    InnerServerConfig config;
 
     @Override
     public void sendMessageToTransferChannel(Message message) {

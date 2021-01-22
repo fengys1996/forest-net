@@ -90,7 +90,7 @@ public class OuterServerApp implements Configurable<OuterServerConfig> {
 
         MonitorInnerServerHandler monitorInnerServerHandler = new MonitorInnerServerHandler(sender, messageResolver,
                                                                                             authencator, domainDataService);
-        AuthHandler authHandler = new AuthHandler(sender, authencator, domainDataService);
+        AuthHandler authHandler = new AuthHandler(sender, authencator, domainDataService, config());
 
         CompletableFuture.runAsync(new MonitorBrowserTask(sender, domainDataService, netService, config(), bossGroup, workGroup),
                                    ThreadPoolTool.getCommonExecutor());
