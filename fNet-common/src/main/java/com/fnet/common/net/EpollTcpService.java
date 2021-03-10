@@ -1,6 +1,5 @@
 package com.fnet.common.net;
 
-import com.fnet.common.config.Config;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
