@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class MessageDecoder extends MessageToMessageDecoder {
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void decode(ChannelHandlerContext ctx, Object msg, List out) throws Exception {
         ByteBuf in = (ByteBuf) msg;

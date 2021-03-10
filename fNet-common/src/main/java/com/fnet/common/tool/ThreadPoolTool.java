@@ -15,8 +15,6 @@ public class ThreadPoolTool {
 
     private static class NewThreadPolicy implements RejectedExecutionHandler {
 
-        public NewThreadPolicy() { }
-
         @Override
         public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
             log.info("common thread pool resource insufficient, so create a new thread to excute!");
@@ -24,14 +22,14 @@ public class ThreadPoolTool {
         }
     }
 
-    private static int availableProcessors = NettyRuntime.availableProcessors();
-    private static final ExecutorService commonExecutor = new ThreadPoolExecutor(availableProcessors, availableProcessors * 2,
-                                                                                  5L, TimeUnit.SECONDS,
-                                                                                 new LinkedBlockingQueue<Runnable>(1000),
-                                                                                 new DefaultThreadFactory("commonThreadPool"),
-                                                                                 new NewThreadPolicy());
+    private static final int AVAILABLE_PROCESSORS = NettyRuntime.availableProcessors();
+    private static final ExecutorService COMMON_EXECUTOR = new ThreadPoolExecutor(AVAILABLE_PROCESSORS, AVAILABLE_PROCESSORS * 2,
+                                                     5L, TimeUnit.SECONDS,
+                                                     new LinkedBlockingQueue<Runnable>(1000),
+                                                     new DefaultThreadFactory("commonThreadPool"),
+                                                     new NewThreadPolicy());
 
     public static ExecutorService getCommonExecutor() {
-        return commonExecutor;
+        return COMMON_EXECUTOR;
     }
 }
