@@ -126,7 +126,7 @@ public class OuterServerApp implements Configurable<OuterServerConfig> {
         try {
             config = new OuterCmdParser(args).parse();
         } catch (ParseException e) {
-            log.info("cmd parser fialed!");
+            log.info("cmd parser failed!");
         }
         if (config == null)      return false;
         return true;

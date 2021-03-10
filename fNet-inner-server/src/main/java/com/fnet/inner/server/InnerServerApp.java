@@ -58,7 +58,7 @@ public class InnerServerApp implements Configurable<InnerServerConfig> {
     }
 
     private void start() throws Exception {
-        // create eventloop group(woeker)
+        // create eventloop group(worker)
         int availableProcessors = NettyRuntime.availableProcessors();
         EventLoopGroup workGroup;
         if (!NetTool.isLinuxEnvironment()) {
@@ -109,7 +109,7 @@ public class InnerServerApp implements Configurable<InnerServerConfig> {
         try {
             config = new InnerCmdParser(args).parse();
         } catch (ParseException e) {
-            log.info("cmd parser fialed!");
+            log.info("cmd parser failed!");
         }
         if (config == null)      return false;
         return true;
