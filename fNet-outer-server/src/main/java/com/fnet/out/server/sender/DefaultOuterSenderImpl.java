@@ -4,8 +4,10 @@ import com.fnet.common.service.Sender;
 import com.fnet.common.tool.ObjectTool;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageType;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import static com.fnet.out.server.sender.TransferCache.*;
@@ -13,6 +15,7 @@ import static com.fnet.out.server.sender.TransferCache.*;
 /**
  * @author fys
  */
+@Slf4j
 @Component
 public class DefaultOuterSenderImpl implements Sender {
 
@@ -30,6 +33,9 @@ public class DefaultOuterSenderImpl implements Sender {
 
         if (ObjectTool.checkChannel(transferChannel)) {
             transferChannel.writeAndFlush(message);
+        } else {
+            message.release();
+            log.info("transfer channel is not writable, so dicard some message!!!");
         }
     }
 
@@ -45,19 +51,27 @@ public class DefaultOuterSenderImpl implements Sender {
 
         if (ObjectTool.checkChannel(outerChannel)) {
             outerChannel.writeAndFlush(message.getPayLoad());
+        } else {
+            message.release();
+            log.info("channel2browser is not writable, so dicard some message!!!");
         }
     }
 
     Message registerMessage = new Message();
-    byte[] trueBytes = "true".getBytes();
-    byte[] falseBytes = "false".getBytes();
+    ByteBuf falseByteBuf = Unpooled.wrappedBuffer("false".getBytes());
 
     @Override
     public void sendRegisterResponseMessage(boolean isSuccess, byte[] data, Channel channel) {
-        registerMessage.setPayLoad(isSuccess ? Unpooled.wrappedBuffer(data) : Unpooled.wrappedBuffer(falseBytes));
+        ByteBuf payload = isSuccess ? Unpooled.wrappedBuffer(data) : falseByteBuf;
+        registerMessage.setPayLoad(payload);
         registerMessage.setType(MessageType.REGISTER_RESULT);
         if (ObjectTool.checkChannel(channel)) {
             channel.writeAndFlush(registerMessage);
+        } else {
+            if (isSuccess) {
+                registerMessage.release();
+                log.info("transfer channel is not writable, so dicard some message!!!");
+            }
         }
     }
 
@@ -74,6 +88,9 @@ public class DefaultOuterSenderImpl implements Sender {
 
         if (ObjectTool.checkChannel(transferChannel)) {
             transferChannel.write(message);
+        } else {
+            message.release();
+            log.info("transfer channel is not writable, so dicard some message!!!");
         }
     }
 
@@ -88,6 +105,8 @@ public class DefaultOuterSenderImpl implements Sender {
 
         if (ObjectTool.checkChannel(transferChannel)) {
             transferChannel.flush();
+        } else {
+            log.info("[flush] channel is not active!");
         }
     }
 }

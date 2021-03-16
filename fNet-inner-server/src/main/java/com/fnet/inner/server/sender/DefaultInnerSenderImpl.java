@@ -16,6 +16,9 @@ public class DefaultInnerSenderImpl implements Sender {
         Channel transferChannel = TransferCache.getTransferChannel();
         if (ObjectTool.checkChannel(transferChannel)) {
             transferChannel.writeAndFlush(message);
+        } else {
+            message.release();
+            log.info("transfer channel is not writable, so dicard some message!!!");
         }
     }
 
@@ -23,6 +26,9 @@ public class DefaultInnerSenderImpl implements Sender {
     public void sendMessageToTransferChannel(Message message, Channel channel) {
         if (ObjectTool.checkChannel(channel)) {
             channel.writeAndFlush(message);
+        } else {
+            message.release();
+            log.info("transfer channel is not writable, so dicard some message!!!");
         }
     }
 
@@ -31,6 +37,9 @@ public class DefaultInnerSenderImpl implements Sender {
         Channel transferChannel = TransferCache.getTransferChannel();
         if (ObjectTool.checkChannel(transferChannel)) {
             transferChannel.write(message);
+        } else {
+            message.release();
+            log.info("transfer channel is not writable, so dicard some message!!!");
         }
     }
 
@@ -39,6 +48,8 @@ public class DefaultInnerSenderImpl implements Sender {
         Channel transferChannel = TransferCache.getTransferChannel();
         if (ObjectTool.checkChannel(transferChannel)) {
             transferChannel.flush();
+        } else {
+            log.info("[flush] channel is not active!");
         }
     }
 
@@ -47,6 +58,9 @@ public class DefaultInnerSenderImpl implements Sender {
         Channel innerChannel = TransferCache.getInnerChannel(message.getOuterChannelId());
         if (ObjectTool.checkChannel(innerChannel)) {
             sendBytesToRealServer(innerChannel, message);
+        } else {
+            message.release();
+            log.info("channel2realserver is not writable, so dicard some message!!!");
         }
     }
 
@@ -54,6 +68,9 @@ public class DefaultInnerSenderImpl implements Sender {
     public void sendBytesToRealServer(Channel channel, Message message) {
         if (ObjectTool.checkChannel(channel)) {
             channel.writeAndFlush(message.getPayLoad());
+        } else {
+            message.release();
+            log.info("channel2realserver is not writable, so dicard some message!!!");
         }
     }
 }

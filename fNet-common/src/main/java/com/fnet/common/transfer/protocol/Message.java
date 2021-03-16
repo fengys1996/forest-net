@@ -1,6 +1,7 @@
 package com.fnet.common.transfer.protocol;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.util.ReferenceCountUtil;
 
 /**
  * Carrier of communication(outer server <-> inner server)
@@ -48,5 +49,11 @@ public class Message {
 
     public void setPayLoad(ByteBuf payLoad) {
         this.payLoad = payLoad;
+    }
+
+    public void release() {
+        if (payLoad != null) {
+            ReferenceCountUtil.release(payLoad);
+        }
     }
 }
