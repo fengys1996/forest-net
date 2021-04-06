@@ -2,6 +2,7 @@ package com.fnet.inner.server.messageResolver;
 
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageResolver;
+import com.fnet.inner.server.InnerServerApp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ class ResolverFactory {
     static {
         resolvers.add(new DisconnectResolver());
         resolvers.add(new HeartBeatResolver());
-        resolvers.add(new TransferResolver());
+        resolvers.add(new TransferResolver(InnerServerApp.DISRUPTOR.getRingBuffer()));
     }
 
     private ResolverFactory() {

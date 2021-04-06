@@ -14,7 +14,12 @@ import com.fnet.common.transfer.protocol.MessageResolver;
 import com.fnet.inner.server.handler.KeepAliveHandler;
 import com.fnet.inner.server.handler.MonitorOuterServerHandler;
 import com.fnet.inner.server.handler.RegisterHandler;
-import com.fnet.inner.server.task.SendMessageToRealServerTask;
+import com.fnet.inner.server.messageQueue.MessageEvent;
+import com.fnet.inner.server.messageQueue.MessageEventFactory;
+import com.fnet.inner.server.messageQueue.MessageEventHandler;
+import com.lmax.disruptor.YieldingWaitStrategy;
+import com.lmax.disruptor.dsl.Disruptor;
+import com.lmax.disruptor.dsl.ProducerType;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
@@ -30,8 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.CompletableFuture;
-
 @Slf4j
 @Component
 public class InnerServerApp implements Configurable<InnerServerConfig> {
@@ -45,6 +48,11 @@ public class InnerServerApp implements Configurable<InnerServerConfig> {
     NetService netService;
 
     InnerServerConfig config;
+    public static final Disruptor<MessageEvent> DISRUPTOR = new Disruptor<MessageEvent>(new MessageEventFactory(),
+                                                                                        1,
+                                                                                        new DefaultThreadFactory("message_transfer"),
+                                                                                        ProducerType.SINGLE,
+                                                                                        new YieldingWaitStrategy());
 
     public static void main(String[] args) throws Exception {
         AnnotationConfigApplicationContext springCtx;
@@ -67,16 +75,16 @@ public class InnerServerApp implements Configurable<InnerServerConfig> {
             workGroup = new EpollEventLoopGroup(availableProcessors, new DefaultThreadFactory("inner_server_work_group"));
         }
 
-        // start task to carry data form block queue to real server
-        CompletableFuture.runAsync(new SendMessageToRealServerTask(sender, netService, workGroup,
-                                                                   config().getRsa(), config().getRsp()), ThreadPoolTool.getCommonExecutor());
+        // regisiter event handler to carry data from disruptor queue to real server
+        DISRUPTOR.handleEventsWith(new MessageEventHandler(sender, netService, workGroup, config().getRsa(), config().getRsp()));
+        DISRUPTOR.start();
 
         // create some handler and start connect outer server
         RegisterHandler registerHandler = new RegisterHandler(sender, config().getPwd());
         KeepAliveHandler keepAliveHandler = new KeepAliveHandler(sender);
         MonitorOuterServerHandler monitorOuterServerHandler = new MonitorOuterServerHandler(sender, resolver);
 
-        // create a channel to register, when register success, then create other channels
+        // create a channel to register, when register success, then server work
         netService.startConnect(config().getOsa() , config().getOspForInner(), new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) {
@@ -91,11 +99,12 @@ public class InnerServerApp implements Configurable<InnerServerConfig> {
             }
         }, workGroup);
 
-        // clean event loop group before jvm shutdown
+        // clean resources before jvm shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             log.info("start shutdown hook!");
             workGroup.shutdownGracefully();
             ThreadPoolTool.getCommonExecutor().shutdownNow();
+            DISRUPTOR.shutdown();
         }));
     }
 
