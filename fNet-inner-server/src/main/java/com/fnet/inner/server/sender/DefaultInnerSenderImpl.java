@@ -18,7 +18,7 @@ public class DefaultInnerSenderImpl implements Sender {
             transferChannel.writeAndFlush(message);
         } else {
             message.release();
-            log.info("transfer channel is not writable, so dicard some message!!!");
+            log.info("transfer channel is not writable, so discard some message!!!");
         }
     }
 
@@ -28,7 +28,7 @@ public class DefaultInnerSenderImpl implements Sender {
             channel.writeAndFlush(message);
         } else {
             message.release();
-            log.info("transfer channel is not writable, so dicard some message!!!");
+            log.info("transfer channel is not writable, so discard some message!!!");
         }
     }
 
@@ -39,7 +39,7 @@ public class DefaultInnerSenderImpl implements Sender {
             transferChannel.write(message);
         } else {
             message.release();
-            log.info("transfer channel is not writable, so dicard some message!!!");
+            log.info("transfer channel is not writable, so discard some message!!!");
         }
     }
 
@@ -60,7 +60,7 @@ public class DefaultInnerSenderImpl implements Sender {
             sendBytesToRealServer(innerChannel, message);
         } else {
             message.release();
-            log.info("channel2realserver is not writable, so dicard some message!!!");
+            log.info("channel2realserver is not writable, so discard some message!!!");
         }
     }
 
@@ -70,7 +70,7 @@ public class DefaultInnerSenderImpl implements Sender {
             channel.writeAndFlush(message.getPayLoad());
         } else {
             message.release();
-            log.info("channel2realserver is not writable, so dicard some message!!!");
+            log.info("channel2realserver is not writable, so discard some message!!!");
         }
     }
 }
