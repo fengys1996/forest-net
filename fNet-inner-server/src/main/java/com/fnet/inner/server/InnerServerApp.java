@@ -17,7 +17,7 @@ import com.fnet.inner.server.handler.RegisterHandler;
 import com.fnet.inner.server.messageQueue.MessageEvent;
 import com.fnet.inner.server.messageQueue.MessageEventFactory;
 import com.fnet.inner.server.messageQueue.MessageEventHandler;
-import com.lmax.disruptor.YieldingWaitStrategy;
+import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import io.netty.channel.ChannelInitializer;
@@ -52,7 +52,7 @@ public class InnerServerApp implements Configurable<InnerServerConfig> {
                                                                                         1024 * 1024,
                                                                                         new DefaultThreadFactory("message_transfer"),
                                                                                         ProducerType.SINGLE,
-                                                                                        new YieldingWaitStrategy());
+                                                                                        new BlockingWaitStrategy());
 
     public static void main(String[] args) throws Exception {
         AnnotationConfigApplicationContext springCtx;
