@@ -35,7 +35,7 @@ public class DefaultOuterSenderImpl implements Sender {
             transferChannel.writeAndFlush(message);
         } else {
             message.release();
-            log.info("transfer channel is not writable, so dicard some message!!!");
+            log.info("transfer channel is not writable, so discard some message!!!");
         }
     }
 
@@ -53,7 +53,7 @@ public class DefaultOuterSenderImpl implements Sender {
             outerChannel.writeAndFlush(message.getPayLoad());
         } else {
             message.release();
-            log.info("channel2browser is not writable, so dicard some message!!!");
+            log.info("channel2browser is not writable, so discard some message!!!");
         }
     }
 
@@ -70,7 +70,7 @@ public class DefaultOuterSenderImpl implements Sender {
         } else {
             if (isSuccess) {
                 registerMessage.release();
-                log.info("transfer channel is not writable, so dicard some message!!!");
+                log.info("transfer channel is not writable, so discard some message!!!");
             }
         }
     }
@@ -90,7 +90,7 @@ public class DefaultOuterSenderImpl implements Sender {
             transferChannel.write(message);
         } else {
             message.release();
-            log.info("transfer channel is not writable, so dicard some message!!!");
+            log.info("transfer channel is not writable, so discard some message!!!");
         }
     }
 
