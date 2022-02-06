@@ -29,7 +29,7 @@ public class DefaultOuterSenderImpl implements Sender {
         }
 
         Channel transferChannel =
-                outerChannel2TransferChannelReleatedCache.get(message.getOuterChannelId());
+                outerChannel2TransferChannelRelatedCache.get(message.getOuterChannelId());
 
         if (ObjectTool.checkChannel(transferChannel)) {
             transferChannel.writeAndFlush(message);
@@ -84,7 +84,7 @@ public class DefaultOuterSenderImpl implements Sender {
         }
 
         Channel transferChannel =
-                outerChannel2TransferChannelReleatedCache.get(outerChannelId);
+                outerChannel2TransferChannelRelatedCache.get(outerChannelId);
 
         if (ObjectTool.checkChannel(transferChannel)) {
             transferChannel.write(message);
@@ -101,7 +101,7 @@ public class DefaultOuterSenderImpl implements Sender {
         }
 
         Channel transferChannel =
-                outerChannel2TransferChannelReleatedCache.get(outerChannelId);
+                outerChannel2TransferChannelRelatedCache.get(outerChannelId);
 
         if (ObjectTool.checkChannel(transferChannel)) {
             transferChannel.flush();
