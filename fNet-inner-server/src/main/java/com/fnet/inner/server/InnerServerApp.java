@@ -49,7 +49,7 @@ public class InnerServerApp implements Configurable<InnerServerConfig> {
 
     InnerServerConfig config;
     public static final Disruptor<MessageEvent> DISRUPTOR = new Disruptor<MessageEvent>(new MessageEventFactory(),
-                                                                                        1,
+                                                                                        10000,
                                                                                         new DefaultThreadFactory("message_transfer"),
                                                                                         ProducerType.SINGLE,
                                                                                         new YieldingWaitStrategy());
