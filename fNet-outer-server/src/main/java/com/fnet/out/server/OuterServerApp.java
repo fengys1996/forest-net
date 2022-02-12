@@ -146,7 +146,7 @@ public class OuterServerApp implements Configurable<OuterServerConfig> {
 
         // set tcp service
         if (NetTool.isLinuxEnvironment())
-                ((EpollTcpService)netService).setEnableSoResuePort(config.getEnableSoReusePort());
+                ((EpollTcpService)netService).setEnableSoReusePort(config.getEnableSoReusePort());
 
         // set password
         authencator.setPassword(config.getPwd());

@@ -33,10 +33,10 @@ public class EpollTcpService implements NetService {
     private static final WriteBufferWaterMark
             WRITE_BUFFER_WATER_MARK_OF_INNER_SERVER = new WriteBufferWaterMark(2 * 1024 * 1024, 4 * 1024 * 1024);
 
-    private int enableSoResuePort;
+    private int enableSoReusePort;
 
-    public void setEnableSoResuePort(int enableSoResuePort) {
-        this.enableSoResuePort = enableSoResuePort;
+    public void setEnableSoReusePort(int enableSoReusePort) {
+        this.enableSoReusePort = enableSoReusePort;
     }
 
     @Override
@@ -51,8 +51,8 @@ public class EpollTcpService implements NetService {
                  .childHandler(channelInitializer);
 
         int listenSocketNum = 1;
-        if (enableSoResuePort == 1) {
-            log.info("Enable so_resueport!");
+        if (enableSoReusePort == 1) {
+            log.info("Enable so_reuse_port!");
             bootstrap.option(UnixChannelOption.SO_REUSEPORT, true);
             listenSocketNum = NettyRuntime.availableProcessors();
         }
