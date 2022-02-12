@@ -1,7 +1,6 @@
 package com.fnet.inner.server.handler;
 
 import com.fnet.common.service.Sender;
-import com.fnet.common.tool.ThreadPoolTool;
 import com.fnet.common.transfer.protocol.Message;
 import com.fnet.common.transfer.protocol.MessageResolver;
 import com.fnet.inner.server.sender.TransferCache;
@@ -10,8 +9,6 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.concurrent.ExecutorService;
 
 @Slf4j
 @Sharable
@@ -43,13 +40,5 @@ public class MonitorOuterServerHandler extends ChannelInboundHandlerAdapter {
         TransferCache.removeTransferChannel();
         Channel channel = ctx.channel();
         channel.close();
-
-        // when transfer channel is inactive, inner server will close.
-        channel.eventLoop().parent().shutdownGracefully();
-        ExecutorService commonExecutor;
-        commonExecutor = ThreadPoolTool.getCommonExecutor();
-        if (commonExecutor != null && !commonExecutor.isShutdown()) {
-            ThreadPoolTool.getCommonExecutor().shutdownNow();
-        }
     }
 }
