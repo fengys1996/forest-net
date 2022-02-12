@@ -75,7 +75,7 @@ public class InnerServerApp implements Configurable<InnerServerConfig> {
             workGroup = new EpollEventLoopGroup(availableProcessors, new DefaultThreadFactory("inner_server_work_group"));
         }
 
-        // regisiter event handler to carry data from disruptor queue to real server
+        // register event handler to carry data from disruptor queue to real server
         DISRUPTOR.handleEventsWith(new MessageEventHandler(sender, netService, workGroup, config().getRsa(), config().getRsp()));
         DISRUPTOR.start();
 
